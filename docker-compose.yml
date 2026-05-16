@@ -1,20 +1,18 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: triax
+      POSTGRES_USER: triax
+      POSTGRES_PASSWORD: triax
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - triax_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U triax -d triax"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,6 +30,39 @@ services:
         condition: service_healthy
     networks:
       - triax_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - triax_network
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A worker.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - triax_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - triax_network
+    depends_on:
+      - api
 
 networks:
   triax_network:

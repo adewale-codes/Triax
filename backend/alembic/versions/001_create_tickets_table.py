@@ -18,38 +18,26 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    ticket_status = sa.Enum("open", "in_progress", "resolved", name="ticketstatus")
-    ticket_status.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE ticketstatus AS ENUM ('open', 'in_progress', 'resolved');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
+    """)
 
-    op.create_table(
-        "tickets",
-        sa.Column(
-            "id",
-            UUID(as_uuid=True),
-            primary_key=True,
-            server_default=sa.text("gen_random_uuid()"),
-        ),
-        sa.Column("title", sa.String(255), nullable=False),
-        sa.Column("description", sa.Text(), nullable=True),
-        sa.Column(
-            "status",
-            sa.Enum("open", "in_progress", "resolved", name="ticketstatus"),
-            nullable=False,
-            server_default="open",
-        ),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-        ),
-        sa.Column(
-            "updated_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.func.now(),
-        ),
-    )
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS tickets (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            status ticketstatus NOT NULL DEFAULT 'open',
+            created_at TIMESTAMPTZ DEFAULT now(),
+            updated_at TIMESTAMPTZ DEFAULT now()
+        )
+    """)
 
 
 def downgrade() -> None:
-    op.drop_table("tickets")
-    sa.Enum(name="ticketstatus").drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TABLE IF EXISTS tickets")
+    op.execute("DROP TYPE IF EXISTS ticketstatus")
