@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -20,6 +21,14 @@ class TicketResponse(BaseModel):
     status: TicketStatus
     created_at: datetime
     updated_at: datetime
+
+    # AI pipeline fields
+    issue_type: str | None = None
+    urgency_score: int | None = None
+    suggested_reply: str | None = None
+    explanation: str | None = None
+    relevant_docs: list[dict[str, Any]] | None = None
+    processing_status: str | None = None
 
 
 class TicketListResponse(BaseModel):

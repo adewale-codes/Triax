@@ -8,3 +8,6 @@ python-dotenv
 pydantic-settings
 celery
 redis
+openai
+pgvector
+numpy
