@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import Date, cast, func, select
+from sqlalchemy import String, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -114,19 +114,23 @@ async def get_analytics(db: AsyncSession = Depends(get_db)):
         for row in status_result.all()
     ]
 
-    # Volume over last 30 days grouped by calendar date
+    # Volume over last 30 days grouped by calendar date.
+    # func.date() extracts the date portion on both PostgreSQL and SQLite;
+    # casting to String ensures the result is always "YYYY-MM-DD" with no
+    # dialect-specific type coercion that could break fromisoformat.
     thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    date_expr = cast(func.date(Ticket.created_at), String)
     volume_result = await db.execute(
         select(
-            cast(Ticket.created_at, Date).label("date"),
+            date_expr.label("date"),
             func.count().label("count"),
         )
         .where(Ticket.created_at >= thirty_days_ago)
-        .group_by(cast(Ticket.created_at, Date))
-        .order_by(cast(Ticket.created_at, Date))
+        .group_by(date_expr)
+        .order_by(date_expr)
     )
     volume_over_time = [
-        VolumePoint(date=str(row.date), count=row.count)
+        VolumePoint(date=row.date, count=row.count)
         for row in volume_result.all()
     ]
 

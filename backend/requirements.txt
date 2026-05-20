@@ -11,3 +11,7 @@ redis
 openai
 pgvector
 numpy
+pytest
+pytest-asyncio
+httpx
+aiosqlite
