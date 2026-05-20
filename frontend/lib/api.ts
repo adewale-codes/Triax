@@ -32,6 +32,24 @@ export async function getTicket(id: string): Promise<Ticket> {
   return res.json()
 }
 
+export interface Analytics {
+  total_tickets: number
+  avg_urgency_score: number | null
+  completion_rate: number
+  failed_count: number
+  by_issue_type: { issue_type: string; count: number }[]
+  by_urgency: { urgency_score: number; count: number }[]
+  by_processing_status: { processing_status: string; count: number }[]
+  by_status: { status: string; count: number }[]
+  volume_over_time: { date: string; count: number }[]
+}
+
+export async function getAnalytics(): Promise<Analytics> {
+  const res = await fetch(`${API_BASE}/api/v1/analytics`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to fetch analytics')
+  return res.json()
+}
+
 export async function createTicket(data: TicketCreate): Promise<Ticket> {
   const res = await fetch(`${API_BASE}/api/v1/tickets`, {
     method: 'POST',

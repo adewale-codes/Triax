@@ -26,6 +26,12 @@ export default function Navbar() {
             >
               New Ticket
             </Link>
+            <Link
+              href="/analytics"
+              className="rounded px-3 py-1.5 text-sm text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#1e1e2e] transition-colors"
+            >
+              Analytics
+            </Link>
           </div>
         </div>
         <Link
