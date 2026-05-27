@@ -2,7 +2,7 @@ import logging
 import os
 from uuid import UUID
 
-from openai import AsyncOpenAI
+import httpx
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,15 +11,42 @@ from models.ticket import Ticket
 
 logger = logging.getLogger(__name__)
 
-client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://ollama:11434")
+LLM_MODEL = os.environ.get("LLM_MODEL", "llama3.1:8b")
+EMBED_MODEL = os.environ.get("EMBED_MODEL", "nomic-embed-text")
+
+_VALID_ISSUE_TYPES = {
+    "payment_failure",
+    "p2p_dispute",
+    "kyc_query",
+    "fraud_flag",
+    "withdrawal_issue",
+    "general_enquiry",
+}
 
 
 async def embed_text(text: str) -> list[float]:
-    response = await client.embeddings.create(
-        model="text-embedding-ada-002",
-        input=text,
-    )
-    return response.data[0].embedding
+    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=120) as client:
+        response = await client.post("/api/embed", json={"model": EMBED_MODEL, "input": text})
+        response.raise_for_status()
+        return response.json()["embeddings"][0]
+
+
+async def _chat(system: str, user: str) -> str:
+    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=300) as client:
+        response = await client.post(
+            "/api/chat",
+            json={
+                "model": LLM_MODEL,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "stream": False,
+            },
+        )
+        response.raise_for_status()
+        return response.json()["message"]["content"].strip()
 
 
 async def search_relevant_docs(db: AsyncSession, query: str, limit: int = 3) -> list[dict]:
@@ -38,54 +65,29 @@ async def classify_ticket(title: str, description: str, relevant_docs: list[dict
     docs_context = "\n".join(
         f"[{d['category']}] {d['title']}: {d['content']}" for d in relevant_docs
     )
-    response = await client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a fintech support classifier. Classify the ticket into exactly one of: "
-                    "payment_failure, p2p_dispute, kyc_query, fraud_flag, withdrawal_issue, general_enquiry. "
-                    "Return the classification string only, nothing else."
-                ),
-            },
-            {
-                "role": "user",
-                "content": (
-                    f"Title: {title}\nDescription: {description}\n\n"
-                    f"Relevant policy context:\n{docs_context}"
-                ),
-            },
-        ],
-        max_tokens=20,
-        temperature=0,
+    system = (
+        "You are a fintech support classifier. Respond with ONLY one of these exact words, nothing else: "
+        "payment_failure, p2p_dispute, kyc_query, fraud_flag, withdrawal_issue, general_enquiry"
     )
-    return response.choices[0].message.content.strip()
+    user = (
+        f"Title: {title}\nDescription: {description}\n\n"
+        f"Relevant policy context:\n{docs_context}"
+    )
+    raw = await _chat(system, user)
+    result = raw.lower().strip()
+    return result if result in _VALID_ISSUE_TYPES else "general_enquiry"
 
 
 async def score_urgency(title: str, description: str, issue_type: str) -> int:
-    response = await client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a fintech support urgency scorer. Rate urgency 1-5 where 5 is most urgent. "
-                    "Score higher for: financial loss, fraud keywords, account access issues. "
-                    "Score lower for: general questions, informational requests. "
-                    "Return only a single integer between 1 and 5."
-                ),
-            },
-            {
-                "role": "user",
-                "content": f"Issue type: {issue_type}\nTitle: {title}\nDescription: {description}",
-            },
-        ],
-        max_tokens=5,
-        temperature=0,
+    system = (
+        "You are an urgency scorer. Respond with ONLY a single digit between 1 and 5, nothing else. "
+        "5 is most urgent. Score higher for financial loss, fraud keywords, account access issues. "
+        "Score lower for general questions and informational requests."
     )
+    user = f"Issue type: {issue_type}\nTitle: {title}\nDescription: {description}"
+    raw = await _chat(system, user)
     try:
-        return int(response.choices[0].message.content.strip())
+        return int(raw.strip())
     except ValueError:
         return 3
 
@@ -96,59 +98,33 @@ async def generate_reply(
     docs_context = "\n".join(
         f"[{d['category']}] {d['title']}: {d['content']}" for d in relevant_docs
     )
-    response = await client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a professional fintech customer support agent. "
-                    "Write a professional, empathetic first response to the customer's support ticket. "
-                    "Reference relevant policy information where appropriate. Be concise and helpful."
-                ),
-            },
-            {
-                "role": "user",
-                "content": (
-                    f"Issue type: {issue_type}\nTitle: {title}\nDescription: {description}\n\n"
-                    f"Relevant policies:\n{docs_context}"
-                ),
-            },
-        ],
-        max_tokens=400,
-        temperature=0.3,
+    system = (
+        "You are a professional fintech customer support agent. "
+        "Write a professional, empathetic first response to the customer's support ticket. "
+        "Reference relevant policy information where appropriate. Be concise and helpful."
     )
-    return response.choices[0].message.content.strip()
+    user = (
+        f"Issue type: {issue_type}\nTitle: {title}\nDescription: {description}\n\n"
+        f"Relevant policies:\n{docs_context}"
+    )
+    return await _chat(system, user)
 
 
 async def build_explanation(
     title: str, issue_type: str, urgency_score: int, relevant_docs: list[dict]
 ) -> str:
     docs_titles = ", ".join(d["title"] for d in relevant_docs) if relevant_docs else "none"
-    response = await client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a fintech support triage assistant. Explain in 2-3 sentences why "
-                    "the ticket was classified with this issue type and why it received this urgency score. "
-                    "Be plain and direct."
-                ),
-            },
-            {
-                "role": "user",
-                "content": (
-                    f"Title: {title}\nClassification: {issue_type}\n"
-                    f"Urgency score: {urgency_score}/5\n"
-                    f"Relevant policies consulted: {docs_titles}"
-                ),
-            },
-        ],
-        max_tokens=150,
-        temperature=0.2,
+    system = (
+        "You are a fintech support triage assistant. Explain in 2-3 sentences why "
+        "the ticket was classified with this issue type and why it received this urgency score. "
+        "Be plain and direct."
     )
-    return response.choices[0].message.content.strip()
+    user = (
+        f"Title: {title}\nClassification: {issue_type}\n"
+        f"Urgency score: {urgency_score}/5\n"
+        f"Relevant policies consulted: {docs_titles}"
+    )
+    return await _chat(system, user)
 
 
 async def run_pipeline(db: AsyncSession, ticket_id: str) -> dict:

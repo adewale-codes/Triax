@@ -28,7 +28,7 @@ flowchart LR
     B --> C[(PostgreSQL + pgvector)]
     B --> D[(Redis)]
     D --> E[Celery Worker]
-    E --> F[OpenAI GPT-4o-mini]
+    E --> F[Ollama / Llama 3.1]
     E --> C
 ```
 
@@ -44,7 +44,7 @@ flowchart LR
 | Vector Store | pgvector | Cosine similarity search over policy document embeddings |
 | Task Queue | Celery | Async AI pipeline — runs after ticket creation |
 | Message Broker | Redis 7 | Celery broker and result backend |
-| AI / LLM | OpenAI GPT-4o-mini + text-embedding-ada-002 | Classification, urgency scoring, reply generation |
+| AI / LLM | Ollama + Llama 3.1 8B + nomic-embed-text | Classification, urgency scoring, reply generation |
 | Containerisation | Docker + Docker Compose | Local dev and deployment |
 
 ---
@@ -55,7 +55,6 @@ flowchart LR
 git clone https://github.com/adewale-codes/triax
 cd triax
 cp .env.example .env
-# Add your OPENAI_API_KEY to .env
 make up
 make migrate
 # Open http://localhost:3000
@@ -63,7 +62,7 @@ make migrate
 
 The API is available at `http://localhost:8000`. The frontend at `http://localhost:3000`.
 
-On first startup the API seeds the vector store with policy documents (requires a valid `OPENAI_API_KEY`). If the key is missing the app still starts — seeding is logged as a warning and skipped.
+On first startup the `ollama-setup` container automatically pulls `llama3.1:8b` and `nomic-embed-text`. This takes a few minutes on first run. No external API keys are required — all inference runs locally via Ollama.
 
 ---
 
@@ -166,7 +165,9 @@ triax/
 | `POSTGRES_PASSWORD` | Database password | `triax` |
 | `ENVIRONMENT` | Deployment environment | `development` |
 | `REDIS_URL` | Redis connection string | `redis://redis:6379/0` |
-| `OPENAI_API_KEY` | OpenAI API key (required for AI pipeline) | `sk-...` |
+| `OLLAMA_BASE_URL` | Ollama service URL | `http://ollama:11434` |
+| `LLM_MODEL` | Ollama chat model | `llama3.1:8b` |
+| `EMBED_MODEL` | Ollama embedding model | `nomic-embed-text` |
 
 ---
 
