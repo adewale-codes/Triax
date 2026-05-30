@@ -3,9 +3,8 @@ import logging
 import os
 
 from celery import Celery
-
-from database import AsyncSessionLocal
-from services.ai_pipeline import run_pipeline
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,12 @@ def process_ticket(ticket_id: str) -> dict:
     logger.info("Processing ticket %s", ticket_id)
 
     async def _run() -> dict:
-        async with AsyncSessionLocal() as db:
-            return await run_pipeline(db, ticket_id)
+        engine = create_async_engine(os.environ.get("DATABASE_URL"), echo=False)
+        async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+        async with async_session() as db:
+            from services.ai_pipeline import run_pipeline
+            result = await run_pipeline(db, ticket_id)
+        await engine.dispose()
+        return result
 
     return asyncio.run(_run())

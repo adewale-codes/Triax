@@ -33,7 +33,7 @@ async def embed_text(text: str) -> list[float]:
 
 
 async def _chat(system: str, user: str) -> str:
-    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=300) as client:
+    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=None) as client:
         response = await client.post(
             "/api/chat",
             json={

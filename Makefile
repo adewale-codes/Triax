@@ -25,5 +25,5 @@ ps:
 	docker compose ps
 
 pull-models:
-	docker compose exec ollama ollama pull llama3.1:8b
+	docker compose exec ollama ollama pull llama3.2:3b
 	docker compose exec ollama ollama pull nomic-embed-text
