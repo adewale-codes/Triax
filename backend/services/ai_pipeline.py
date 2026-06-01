@@ -2,7 +2,7 @@ import logging
 import os
 from uuid import UUID
 
-import httpx
+from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,9 +11,7 @@ from models.ticket import Ticket
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://ollama:11434")
-LLM_MODEL = os.environ.get("LLM_MODEL", "llama3.1:8b")
-EMBED_MODEL = os.environ.get("EMBED_MODEL", "nomic-embed-text")
+client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 _VALID_ISSUE_TYPES = {
     "payment_failure",
@@ -26,27 +24,22 @@ _VALID_ISSUE_TYPES = {
 
 
 async def embed_text(text: str) -> list[float]:
-    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=120) as client:
-        response = await client.post("/api/embed", json={"model": EMBED_MODEL, "input": text})
-        response.raise_for_status()
-        return response.json()["embeddings"][0]
+    response = await client.embeddings.create(
+        model="text-embedding-ada-002",
+        input=text,
+    )
+    return response.data[0].embedding
 
 
 async def _chat(system: str, user: str) -> str:
-    async with httpx.AsyncClient(base_url=OLLAMA_BASE_URL, timeout=None) as client:
-        response = await client.post(
-            "/api/chat",
-            json={
-                "model": LLM_MODEL,
-                "messages": [
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
-                "stream": False,
-            },
-        )
-        response.raise_for_status()
-        return response.json()["message"]["content"].strip()
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+    )
+    return response.choices[0].message.content.strip()
 
 
 async def search_relevant_docs(db: AsyncSession, query: str, limit: int = 3) -> list[dict]:

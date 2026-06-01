@@ -17,28 +17,31 @@ services:
       timeout: 5s
       retries: 5
 
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - triax_network
-
-  ollama-setup:
-    image: ollama/ollama:latest
-    depends_on:
-      - ollama
-    entrypoint: ["/bin/bash", "/scripts/pull_models.sh"]
-    volumes:
-      - ./scripts:/scripts
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_HOST=http://ollama:11434
-    networks:
-      - triax_network
-    restart: "no"
+  # Local inference alternative — swap ai_pipeline.py to use Ollama instead of OpenAI.
+  # Tested with llama3.2:3b + nomic-embed-text. Latency ~8-10 min/ticket on CPU vs 2-3 s with API.
+  #
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   networks:
+  #     - triax_network
+  #
+  # ollama-setup:
+  #   image: ollama/ollama:latest
+  #   depends_on:
+  #     - ollama
+  #   entrypoint: ["/bin/bash", "/scripts/pull_models.sh"]
+  #   volumes:
+  #     - ./scripts:/scripts
+  #     - ollama_data:/root/.ollama
+  #   environment:
+  #     - OLLAMA_HOST=http://ollama:11434
+  #   networks:
+  #     - triax_network
+  #   restart: "no"
 
   api:
     build:
@@ -51,8 +54,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      ollama:
-        condition: service_started
     networks:
       - triax_network
 
@@ -74,8 +75,6 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
-      ollama:
         condition: service_started
     networks:
       - triax_network
@@ -101,4 +100,4 @@ networks:
 
 volumes:
   postgres_data:
-  ollama_data:
+  # ollama_data:  # uncomment if using Ollama

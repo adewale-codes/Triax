@@ -14,4 +14,4 @@ class PolicyDocument(Base):
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=True)
     category = Column(String(100), nullable=True)
-    embedding = Column(Vector(768), nullable=True)
+    embedding = Column(Vector(1536), nullable=True)

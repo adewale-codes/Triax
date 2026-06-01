@@ -1,4 +1,4 @@
-.PHONY: up down down-v migrate test logs logs-worker ps pull-models
+.PHONY: up down down-v migrate test logs logs-worker ps
 
 up:
 	docker compose up --build -d
@@ -23,7 +23,3 @@ logs-worker:
 
 ps:
 	docker compose ps
-
-pull-models:
-	docker compose exec ollama ollama pull llama3.2:3b
-	docker compose exec ollama ollama pull nomic-embed-text
