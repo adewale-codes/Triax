@@ -3,7 +3,7 @@ import os
 from uuid import UUID
 
 from openai import AsyncOpenAI
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.policy_document import PolicyDocument
@@ -158,8 +158,18 @@ async def run_pipeline(db: AsyncSession, ticket_id: str) -> dict:
             "relevant_docs": relevant_docs,
             "processing_status": "completed",
         }
-    except Exception:
-        logger.exception("Pipeline failed for ticket %s", ticket_id)
-        ticket.processing_status = "failed"
-        await db.commit()
+    except Exception as e:
+        logger.error(f"Pipeline failed for ticket {ticket_id}: {e}")
+        try:
+            await db.rollback()
+            await db.execute(
+                text(
+                    "UPDATE tickets SET processing_status = 'failed', updated_at = now() "
+                    "WHERE id = :id"
+                ),
+                {"id": UUID(ticket_id)},
+            )
+            await db.commit()
+        except Exception as update_error:
+            logger.error(f"Failed to update ticket status: {update_error}")
         raise
