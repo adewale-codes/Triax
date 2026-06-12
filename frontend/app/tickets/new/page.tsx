@@ -52,7 +52,7 @@ export default function NewTicketPage() {
       <main className="mx-auto max-w-2xl px-6 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Link
-            href="/"
+            href="/queue"
             className="text-sm text-[#64748b] hover:text-[#e2e8f0] transition-colors"
           >
             ← Queue

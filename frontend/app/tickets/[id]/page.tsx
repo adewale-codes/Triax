@@ -140,7 +140,7 @@ export default function TicketDetailPage() {
       <Navbar />
       <main className="mx-auto max-w-4xl px-6 py-8">
         <Link
-          href="/"
+          href="/queue"
           className="inline-flex items-center gap-1.5 text-sm text-[#64748b] hover:text-[#e2e8f0] transition-colors mb-6"
         >
           ← Back to Queue
