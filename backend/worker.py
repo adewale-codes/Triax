@@ -10,10 +10,18 @@ logger = logging.getLogger(__name__)
 
 redis_url = os.environ.get("REDIS_URL", "redis://redis:6379/0")
 
+# Heroku Redis uses rediss:// (SSL) which needs ssl_cert_reqs
+if redis_url.startswith("rediss://"):
+    broker_url = redis_url + "?ssl_cert_reqs=CERT_NONE"
+    result_backend = redis_url + "?ssl_cert_reqs=CERT_NONE"
+else:
+    broker_url = redis_url
+    result_backend = redis_url
+
 celery_app = Celery(
     "triax",
-    broker=redis_url,
-    backend=redis_url,
+    broker=broker_url,
+    backend=result_backend,
 )
 
 
