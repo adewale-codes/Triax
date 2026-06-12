@@ -1,7 +1,35 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 const GITHUB_URL = 'https://github.com/adewale-codes/triax'
 const LINKEDIN_URL = 'https://www.linkedin.com/in/adewale-sulaiman-5ba149172/'
+
+function useInView<T extends HTMLElement>(threshold = 0.2) {
+  const ref = useRef<T | null>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
+
+  return [ref, inView] as const
+}
 
 function IconTag(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -176,30 +204,42 @@ const techStack = [
 const trustBadges = ['Built with FastAPI', 'Powered by OpenAI', 'Deployed on Heroku']
 
 export default function LandingPage() {
+  const [stepsRef, stepsInView] = useInView<HTMLDivElement>()
+  const [techRef, techInView] = useInView<HTMLDivElement>()
+
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* Hero */}
       <section className="mx-auto max-w-5xl px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-24">
-        <div className="mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366f1]">
+        <div className="mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366f1] fade-up" style={{ animationDelay: '0ms' }}>
           <svg viewBox="0 0 16 16" fill="none" className="h-5 w-5">
             <path d="M3 8h10M8 3v10" stroke="white" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
 
-        <h1 className="text-[36px] leading-tight font-bold tracking-tight text-[#e2e8f0] sm:text-[56px]">
+        <h1
+          className="text-[36px] leading-tight font-bold tracking-tight text-[#e2e8f0] sm:text-[56px] fade-up"
+          style={{ animationDelay: '0ms' }}
+        >
           AI-powered fintech support triage
         </h1>
 
-        <p className="mx-auto mt-5 max-w-2xl text-base text-[#94a3b8] sm:text-lg">
+        <p
+          className="mx-auto mt-5 max-w-2xl text-base text-[#94a3b8] sm:text-lg fade-up"
+          style={{ animationDelay: '150ms' }}
+        >
           Triax automatically classifies incoming support tickets, scores urgency, retrieves
           relevant policy documents, and generates suggested replies — so your team can focus on
           resolution, not routing.
         </p>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div
+          className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row fade-up"
+          style={{ animationDelay: '300ms' }}
+        >
           <Link
             href="/queue"
-            className="flex h-12 w-full items-center justify-center rounded-lg bg-[#6366f1] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:w-auto"
+            className="cta-pulse flex h-12 w-full items-center justify-center rounded-lg bg-[#6366f1] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:w-auto"
           >
             Open App
           </Link>
@@ -213,7 +253,10 @@ export default function LandingPage() {
           </a>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <div
+          className="mt-10 flex flex-wrap items-center justify-center gap-3 fade-up"
+          style={{ animationDelay: '450ms' }}
+        >
           {trustBadges.map((badge) => (
             <span
               key={badge}
@@ -233,13 +276,14 @@ export default function LandingPage() {
           pipeline.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          {steps.map((step) => {
+        <div ref={stepsRef} className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+          {steps.map((step, i) => {
             const Icon = step.icon
             return (
               <div
                 key={step.number}
-                className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6"
+                className={`step-item rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6 ${stepsInView ? 'is-visible' : ''}`}
+                style={{ transitionDelay: `${i * 150}ms` }}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-semibold text-[#6366f1]">
@@ -268,7 +312,7 @@ export default function LandingPage() {
             return (
               <div
                 key={feature.title}
-                className="rounded-lg border border-[#1e1e2e] border-l-4 border-l-[#6366f1] bg-[#13131a] p-6"
+                className="feature-card rounded-lg border border-[#1e1e2e] border-l-4 border-l-[#6366f1] bg-[#13131a] p-6"
               >
                 <Icon className="h-6 w-6 text-[#6366f1]" />
                 <h3 className="mt-4 text-base font-semibold text-[#e2e8f0]">{feature.title}</h3>
@@ -282,11 +326,12 @@ export default function LandingPage() {
       {/* Tech stack */}
       <section id="tech-stack" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
         <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">Tech stack</h2>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {techStack.map((tech) => (
+        <div ref={techRef} className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {techStack.map((tech, i) => (
             <span
               key={tech}
-              className="rounded-full border border-[#1e1e2e] bg-[#13131a] px-4 py-2 text-sm font-medium text-[#e2e8f0]"
+              className={`tech-badge rounded-full border border-[#1e1e2e] bg-[#13131a] px-4 py-2 text-sm font-medium text-[#e2e8f0] ${techInView ? 'is-visible' : ''}`}
+              style={{ transitionDelay: `${i * 50}ms` }}
             >
               {tech}
             </span>
@@ -323,6 +368,71 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <style jsx>{`
+        @media (prefers-reduced-motion: no-preference) {
+          @keyframes fadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          .fade-up {
+            opacity: 0;
+            animation: fadeUp 0.6s ease-out forwards;
+          }
+
+          @keyframes pulse {
+            0%,
+            100% {
+              box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+            }
+            50% {
+              box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+            }
+          }
+
+          .cta-pulse {
+            animation: pulse 2s ease-in-out infinite;
+          }
+
+          .step-item {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+          }
+
+          .step-item.is-visible {
+            opacity: 1;
+            transform: translateX(0);
+          }
+
+          .feature-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+          }
+
+          .tech-badge {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+          }
+
+          .tech-badge.is-visible {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }
