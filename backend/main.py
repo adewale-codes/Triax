@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import AsyncSessionLocal
 from routers.analytics import router as analytics_router
@@ -22,6 +23,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Triax API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://triax-lac.vercel.app", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(tickets_router)
 app.include_router(analytics_router)
