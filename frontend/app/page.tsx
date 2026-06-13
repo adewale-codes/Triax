@@ -375,7 +375,8 @@ export default function LandingPage() {
             <svg
               viewBox="0 0 1100 340"
               width="100%"
-              style={{ minWidth: 800 }}
+              className="mx-auto block"
+              style={{ minWidth: 800, display: 'block', margin: '0 auto' }}
               role="img"
               aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
             >
