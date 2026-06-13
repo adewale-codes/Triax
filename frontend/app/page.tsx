@@ -371,12 +371,11 @@ export default function LandingPage() {
         </p>
 
         <div ref={diagramRef} className="mt-12">
-          <div style={{ overflowX: 'auto' }}>
+          <div className="flex justify-center w-full overflow-x-auto">
+            <div style={{ minWidth: '800px' }}>
             <svg
               viewBox="0 0 1100 340"
               width="100%"
-              className="mx-auto block"
-              style={{ minWidth: 800, display: 'block', margin: '0 auto' }}
               role="img"
               aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
             >
@@ -436,6 +435,7 @@ export default function LandingPage() {
                 </g>
               ))}
             </svg>
+            </div>
           </div>
           <p className="mt-2 text-center text-xs text-[#64748b] md:hidden">
             ← Scroll to see full diagram →
