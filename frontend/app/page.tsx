@@ -220,31 +220,32 @@ const techStack = [
 const trustBadges = ['Built with FastAPI', 'Powered by OpenAI', 'Deployed on Heroku']
 
 // ── System flow diagram data ────────────────────────────────────────────────
-// Boxes are 150x64, positioned by top-left corner (x, y is the vertical center)
+// Boxes are 150x64, positioned by top-left corner (x, y is the vertical center).
+// Top row centres are spaced 175px apart starting at x=40 (centre 115).
 const diagramBoxes = [
   { title: 'Ticket Submitted', tech: 'Web or API', x: 40, y: 60 },
-  { title: 'FastAPI', tech: 'REST endpoint', x: 240, y: 60 },
-  { title: 'Celery Queue', tech: 'Redis broker', x: 440, y: 60 },
-  { title: 'AI Pipeline', tech: 'worker.py', x: 640, y: 60 },
-  { title: 'GPT-4o-mini', tech: 'OpenAI API', x: 840, y: 60 },
+  { title: 'FastAPI', tech: 'REST endpoint', x: 215, y: 60 },
+  { title: 'Celery Queue', tech: 'Redis broker', x: 390, y: 60 },
+  { title: 'AI Pipeline', tech: 'worker.py', x: 565, y: 60 },
+  { title: 'GPT-4o-mini', tech: 'OpenAI API', x: 740, y: 60 },
   { title: 'Agent Interface', tech: 'Next.js UI', x: 40, y: 200 },
-  { title: 'PostgreSQL', tech: 'tickets table', x: 240, y: 200 },
-  { title: 'Results Written', tech: 'DB commit', x: 440, y: 200 },
-  { title: 'pgvector RAG', tech: 'similarity search', x: 640, y: 200 },
+  { title: 'PostgreSQL', tech: 'tickets table', x: 215, y: 200 },
+  { title: 'Results Written', tech: 'DB commit', x: 390, y: 200 },
+  { title: 'pgvector RAG', tech: 'similarity search', x: 565, y: 200 },
 ]
 
-// Arrows for the diagram, drawn in a 900x320 viewBox.
+// Arrows for the diagram, drawn in a 1100x340 viewBox.
 // Each has a stagger delay so they draw themselves left-to-right / top-to-bottom.
 const diagramArrows = [
-  { d: 'M190,60 L240,60', length: 50, delay: 0 }, // Ticket Submitted -> FastAPI
-  { d: 'M390,60 L440,60', length: 50, delay: 100 }, // FastAPI -> Celery Queue
-  { d: 'M590,60 L640,60', length: 50, delay: 200 }, // Celery Queue -> AI Pipeline
-  { d: 'M790,60 L840,60', length: 50, delay: 300 }, // AI Pipeline -> GPT-4o-mini
-  { d: 'M915,92 L915,124 L470,124 L470,168', length: 521, delay: 400 }, // GPT-4o-mini -> Results Written
-  { d: 'M640,200 L590,200', length: 50, delay: 500 }, // pgvector RAG -> Results Written
-  { d: 'M440,200 L390,200', length: 50, delay: 600 }, // Results Written -> PostgreSQL
-  { d: 'M240,200 L190,200', length: 50, delay: 700 }, // PostgreSQL -> Agent Interface
-  { d: 'M560,92 L560,148 L715,148 L715,168', length: 231, delay: 800 }, // Celery Queue -> pgvector RAG
+  { d: 'M190,60 L215,60', length: 25, delay: 0 }, // Ticket Submitted -> FastAPI
+  { d: 'M365,60 L390,60', length: 25, delay: 100 }, // FastAPI -> Celery Queue
+  { d: 'M540,60 L565,60', length: 25, delay: 200 }, // Celery Queue -> AI Pipeline
+  { d: 'M715,60 L740,60', length: 25, delay: 300 }, // AI Pipeline -> GPT-4o-mini
+  { d: 'M815,92 L815,124 L420,124 L420,168', length: 471, delay: 400 }, // GPT-4o-mini -> Results Written
+  { d: 'M565,200 L540,200', length: 25, delay: 500 }, // pgvector RAG -> Results Written
+  { d: 'M390,200 L365,200', length: 25, delay: 600 }, // Results Written -> PostgreSQL
+  { d: 'M215,200 L190,200', length: 25, delay: 700 }, // PostgreSQL -> Agent Interface
+  { d: 'M510,92 L510,148 L640,148 L640,168', length: 206, delay: 800 }, // Celery Queue -> pgvector RAG
 ]
 
 export default function LandingPage() {
@@ -372,9 +373,9 @@ export default function LandingPage() {
         <div ref={diagramRef} className="mt-12">
           <div style={{ overflowX: 'auto' }}>
             <svg
-              viewBox="0 0 900 320"
+              viewBox="0 0 1100 340"
               width="100%"
-              style={{ minWidth: 600 }}
+              style={{ minWidth: 800 }}
               role="img"
               aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
             >
