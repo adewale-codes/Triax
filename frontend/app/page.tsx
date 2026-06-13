@@ -129,14 +129,6 @@ function IconUserCheck(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
-function IconChevronDown(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 9l6 6l6 -6" />
-    </svg>
-  )
-}
-
 // ── Content ───────────────────────────────────────────────────────────────
 const steps = [
   {
@@ -228,43 +220,31 @@ const techStack = [
 const trustBadges = ['Built with FastAPI', 'Powered by OpenAI', 'Deployed on Heroku']
 
 // ── System flow diagram data ────────────────────────────────────────────────
-// Desktop grid: 4 columns x 3 rows
-const diagramNodes = [
-  { title: 'Ticket Submitted', tech: 'Web / API', col: 1, row: 1 },
-  { title: 'FastAPI', tech: 'REST endpoint', col: 2, row: 1 },
-  { title: 'Celery Queue', tech: 'Redis broker', col: 3, row: 1 },
-  { title: 'AI Pipeline', tech: 'worker.py', col: 4, row: 1 },
-  { title: 'Agent Interface', tech: 'Next.js UI', col: 1, row: 2 },
-  { title: 'PostgreSQL', tech: 'tickets table', col: 2, row: 2 },
-  { title: 'Results Written', tech: 'DB commit', col: 3, row: 2 },
-  { title: 'GPT-4o-mini', tech: 'OpenAI API', col: 4, row: 2 },
-  { title: 'pgvector RAG', tech: 'similarity search', col: 4, row: 3 },
+// Boxes are 150x64, positioned by top-left corner (x, y is the vertical center)
+const diagramBoxes = [
+  { title: 'Ticket Submitted', tech: 'Web or API', x: 40, y: 60 },
+  { title: 'FastAPI', tech: 'REST endpoint', x: 240, y: 60 },
+  { title: 'Celery Queue', tech: 'Redis broker', x: 440, y: 60 },
+  { title: 'AI Pipeline', tech: 'worker.py', x: 640, y: 60 },
+  { title: 'GPT-4o-mini', tech: 'OpenAI API', x: 840, y: 60 },
+  { title: 'Agent Interface', tech: 'Next.js UI', x: 40, y: 200 },
+  { title: 'PostgreSQL', tech: 'tickets table', x: 240, y: 200 },
+  { title: 'Results Written', tech: 'DB commit', x: 440, y: 200 },
+  { title: 'pgvector RAG', tech: 'similarity search', x: 640, y: 200 },
 ]
 
-// Linear order for the mobile vertical flow
-const mobileFlow = [
-  { title: 'Ticket Submitted', tech: 'Web / API' },
-  { title: 'FastAPI', tech: 'REST endpoint' },
-  { title: 'Celery Queue', tech: 'Redis broker' },
-  { title: 'AI Pipeline', tech: 'worker.py' },
-  { title: 'pgvector RAG', tech: 'similarity search' },
-  { title: 'GPT-4o-mini', tech: 'OpenAI API' },
-  { title: 'Results Written', tech: 'DB commit' },
-  { title: 'PostgreSQL', tech: 'tickets table' },
-  { title: 'Agent Interface', tech: 'Next.js UI' },
-]
-
-// Arrows for the desktop diagram, drawn in a 400x320 viewBox.
-// Each has a stagger delay so they appear left-to-right / top-to-bottom.
+// Arrows for the diagram, drawn in a 900x320 viewBox.
+// Each has a stagger delay so they draw themselves left-to-right / top-to-bottom.
 const diagramArrows = [
-  { d: 'M90,40 L114,40', delay: 0 },
-  { d: 'M190,40 L214,40', delay: 100 },
-  { d: 'M290,40 L314,40', delay: 200 },
-  { d: 'M350,64 L350,136', delay: 300 },
-  { d: 'M310,180 L286,180', delay: 400 },
-  { d: 'M210,180 L186,180', delay: 500 },
-  { d: 'M110,180 L86,180', delay: 600 },
-  { d: 'M350,296 L350,224', delay: 700 },
+  { d: 'M190,60 L240,60', length: 50, delay: 0 }, // Ticket Submitted -> FastAPI
+  { d: 'M390,60 L440,60', length: 50, delay: 100 }, // FastAPI -> Celery Queue
+  { d: 'M590,60 L640,60', length: 50, delay: 200 }, // Celery Queue -> AI Pipeline
+  { d: 'M790,60 L840,60', length: 50, delay: 300 }, // AI Pipeline -> GPT-4o-mini
+  { d: 'M915,92 L915,124 L470,124 L470,168', length: 521, delay: 400 }, // GPT-4o-mini -> Results Written
+  { d: 'M640,200 L590,200', length: 50, delay: 500 }, // pgvector RAG -> Results Written
+  { d: 'M440,200 L390,200', length: 50, delay: 600 }, // Results Written -> PostgreSQL
+  { d: 'M240,200 L190,200', length: 50, delay: 700 }, // PostgreSQL -> Agent Interface
+  { d: 'M560,92 L560,148 L715,148 L715,168', length: 231, delay: 800 }, // Celery Queue -> pgvector RAG
 ]
 
 export default function LandingPage() {
@@ -390,18 +370,20 @@ export default function LandingPage() {
         </p>
 
         <div ref={diagramRef} className="mt-12">
-          {/* Desktop diagram */}
-          <div className="relative hidden lg:block">
+          <div style={{ overflowX: 'auto' }}>
             <svg
-              viewBox="0 0 400 320"
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              aria-hidden="true"
+              viewBox="0 0 900 320"
+              width="100%"
+              style={{ minWidth: 600 }}
+              role="img"
+              aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
             >
               <defs>
-                <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <marker id="diagram-arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
                   <path d="M0,0 L8,4 L0,8 z" fill="#6366f1" />
                 </marker>
               </defs>
+
               {diagramArrows.map((arrow, i) => (
                 <path
                   key={i}
@@ -409,48 +391,53 @@ export default function LandingPage() {
                   stroke="#6366f1"
                   strokeWidth="2"
                   fill="none"
-                  markerEnd="url(#arrowhead)"
+                  markerEnd="url(#diagram-arrowhead)"
                   className="diagram-arrow"
                   style={{
-                    strokeDasharray: 120,
-                    strokeDashoffset: diagramInView ? 0 : 120,
+                    strokeDasharray: arrow.length,
+                    strokeDashoffset: diagramInView ? 0 : arrow.length,
                     transitionDelay: `${arrow.delay}ms`,
                   }}
                 />
               ))}
-            </svg>
 
-            <div className="grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-10">
-              {diagramNodes.map((node) => (
-                <div
-                  key={node.title}
-                  style={{ gridColumn: node.col, gridRow: node.row }}
-                  className="flex flex-col items-center justify-center rounded-lg border border-[#1e1e2e] bg-[#13131a] px-4 py-4 text-center"
-                >
-                  <span className="text-sm font-semibold text-[#e2e8f0]">{node.title}</span>
-                  <span className="mt-1 font-mono text-[10px] text-[#64748b]">{node.tech}</span>
-                </div>
+              {diagramBoxes.map((box) => (
+                <g key={box.title}>
+                  <rect
+                    x={box.x}
+                    y={box.y - 32}
+                    width={150}
+                    height={64}
+                    rx={8}
+                    fill="#13131a"
+                    stroke="#1e1e2e"
+                  />
+                  <text
+                    x={box.x + 75}
+                    y={box.y - 6}
+                    textAnchor="middle"
+                    fill="#ffffff"
+                    fontSize="13"
+                  >
+                    {box.title}
+                  </text>
+                  <text
+                    x={box.x + 75}
+                    y={box.y + 14}
+                    textAnchor="middle"
+                    fill="#64748b"
+                    fontSize="11"
+                    fontFamily="monospace"
+                  >
+                    {box.tech}
+                  </text>
+                </g>
               ))}
-            </div>
+            </svg>
           </div>
-
-          {/* Mobile / tablet diagram — vertical flow */}
-          <div className="flex flex-col items-stretch lg:hidden">
-            {mobileFlow.map((node, i) => (
-              <div key={node.title} className="flex flex-col items-center">
-                <div
-                  className={`diagram-step w-full max-w-sm rounded-lg border border-[#1e1e2e] bg-[#13131a] px-4 py-3 text-center ${diagramInView ? 'is-visible' : ''}`}
-                  style={{ transitionDelay: `${i * 100}ms` }}
-                >
-                  <span className="text-sm font-semibold text-[#e2e8f0]">{node.title}</span>
-                  <span className="mt-1 block font-mono text-[10px] text-[#64748b]">{node.tech}</span>
-                </div>
-                {i < mobileFlow.length - 1 && (
-                  <IconChevronDown className="my-1 h-5 w-5 text-[#6366f1]" />
-                )}
-              </div>
-            ))}
-          </div>
+          <p className="mt-2 text-center text-xs text-[#64748b] md:hidden">
+            ← Scroll to see full diagram →
+          </p>
         </div>
       </section>
 
