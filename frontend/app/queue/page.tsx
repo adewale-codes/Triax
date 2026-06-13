@@ -75,7 +75,8 @@ export default function QueuePage() {
           </div>
         )}
 
-        <div className="rounded-lg border border-[#1e1e2e] bg-[#13131a] overflow-hidden">
+        {/* Desktop table */}
+        <div className="hidden md:block rounded-lg border border-[#1e1e2e] bg-[#13131a] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#1e1e2e]">
@@ -133,6 +134,48 @@ export default function QueuePage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="md:hidden space-y-3">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-4 space-y-2.5">
+                <div className="h-4 w-3/4 rounded bg-[#1e1e2e] animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-[#1e1e2e] animate-pulse" />
+              </div>
+            ))
+          ) : tickets.length === 0 ? (
+            <div className="rounded-lg border border-[#1e1e2e] bg-[#13131a] px-4 py-16 text-center">
+              <p className="text-[#64748b] text-sm mb-3">No tickets in the queue</p>
+              <Link href="/tickets/new" className="text-xs text-[#6366f1] hover:underline">
+                Create the first ticket →
+              </Link>
+            </div>
+          ) : (
+            tickets.map((ticket) => (
+              <div
+                key={ticket.id}
+                onClick={() => router.push(`/tickets/${ticket.id}`)}
+                className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-4 active:bg-[#1e1e2e]/40 transition-colors cursor-pointer"
+              >
+                <div className="flex items-start gap-2.5 mb-2">
+                  <UrgencyIndicator score={ticket.urgency_score} />
+                  <span className="text-[#e2e8f0] font-medium text-sm leading-snug flex-1">
+                    {ticket.title}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <IssueTypeTag issueType={ticket.issue_type} />
+                  <StatusBadge status={ticket.status} />
+                  <ProcessingStatus status={ticket.processing_status} />
+                  <span className="font-mono text-xs text-[#64748b] ml-auto">
+                    {timeAgo(ticket.created_at)}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </main>
     </div>

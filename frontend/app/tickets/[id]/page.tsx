@@ -182,7 +182,7 @@ export default function TicketDetailPage() {
             <div>
               <SectionLabel>AI Triage</SectionLabel>
               <div className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6 space-y-6">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-[#64748b] mb-2">Processing</p>
                     <ProcessingStatus status={ticket.processing_status} />

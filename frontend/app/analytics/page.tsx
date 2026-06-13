@@ -125,14 +125,14 @@ function SkeletonChart() {
   return (
     <div className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-5">
       <div className="h-3 w-32 rounded bg-[#1e1e2e] animate-pulse mb-4" />
-      <div className="h-64 rounded bg-[#0a0a0f] animate-pulse" />
+      <div className="h-[200px] sm:h-64 rounded bg-[#0a0a0f] animate-pulse" />
     </div>
   )
 }
 
 function EmptyChart() {
   return (
-    <div className="flex h-64 items-center justify-center rounded bg-[#0a0a0f]">
+    <div className="flex h-[200px] sm:h-64 items-center justify-center rounded bg-[#0a0a0f]">
       <p className="text-xs text-[#64748b]">No data yet</p>
     </div>
   )
@@ -228,7 +228,8 @@ export default function AnalyticsPage() {
                   {data!.by_issue_type.length === 0 ? (
                     <EmptyChart />
                   ) : (
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="h-[200px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         layout="vertical"
                         data={data!.by_issue_type}
@@ -254,6 +255,7 @@ export default function AnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </div>
                   )}
                 </Card>
               )}
@@ -266,7 +268,8 @@ export default function AnalyticsPage() {
                   {data!.by_urgency.length === 0 ? (
                     <EmptyChart />
                   ) : (
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="h-[200px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={data!.by_urgency}
                         margin={{ left: -8, right: 16, top: 4, bottom: 4 }}
@@ -289,6 +292,7 @@ export default function AnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </div>
                   )}
                 </Card>
               )}
@@ -301,7 +305,8 @@ export default function AnalyticsPage() {
                   {data!.by_processing_status.length === 0 ? (
                     <EmptyChart />
                   ) : (
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="h-[200px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={data!.by_processing_status}
@@ -332,6 +337,7 @@ export default function AnalyticsPage() {
                         />
                       </PieChart>
                     </ResponsiveContainer>
+                    </div>
                   )}
                 </Card>
               )}
@@ -344,7 +350,8 @@ export default function AnalyticsPage() {
                   {data!.by_status.length === 0 ? (
                     <EmptyChart />
                   ) : (
-                    <ResponsiveContainer width="100%" height={260}>
+                    <div className="h-[200px] sm:h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={data!.by_status}
@@ -377,6 +384,7 @@ export default function AnalyticsPage() {
                         />
                       </PieChart>
                     </ResponsiveContainer>
+                    </div>
                   )}
                 </Card>
               )}
@@ -390,7 +398,8 @@ export default function AnalyticsPage() {
                 {data!.volume_over_time.length === 0 ? (
                   <EmptyChart />
                 ) : (
-                  <ResponsiveContainer width="100%" height={220}>
+                  <div className="h-[200px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={data!.volume_over_time}
                       margin={{ left: -8, right: 16, top: 4, bottom: 4 }}
@@ -420,6 +429,7 @@ export default function AnalyticsPage() {
                       />
                     </LineChart>
                   </ResponsiveContainer>
+                  </div>
                 )}
               </Card>
             )}

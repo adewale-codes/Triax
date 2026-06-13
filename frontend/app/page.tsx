@@ -31,6 +31,7 @@ function useInView<T extends HTMLElement>(threshold = 0.2) {
   return [ref, inView] as const
 }
 
+// ── Icons ─────────────────────────────────────────────────────────────────
 function IconTag(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -40,42 +41,44 @@ function IconTag(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
-function IconAlertTriangle(props: React.SVGProps<SVGSVGElement>) {
+function IconGauge(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 9v4" />
-      <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z" />
-      <path d="M12 16h.01" />
+      <path d="M12 14m1.41 -1.41l2.59 -2.59" />
+      <path d="M11 4.055a9 9 0 1 0 9.876 11.945" />
+      <path d="M16 19c.5 -1.5 1 -2.5 1 -4a5 5 0 1 0 -10 0c0 1.5 .5 2.5 1 4" />
+      <path d="M12 4v2" />
+      <path d="M4.5 9l1.5 .8" />
+      <path d="M19.5 9l-1.5 .8" />
     </svg>
   )
 }
 
-function IconVectorSearch(props: React.SVGProps<SVGSVGElement>) {
+function IconStack(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 10m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-      <path d="M12.5 12.5l5.5 5.5" />
+      <path d="M12 4l-8 4l8 4l8 -4l-8 -4" />
+      <path d="M4 12l8 4l8 -4" />
+      <path d="M4 16l8 4l8 -4" />
     </svg>
   )
 }
 
-function IconMessageReply(props: React.SVGProps<SVGSVGElement>) {
+function IconSend(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 3a1 1 0 0 1 1 1v9a1 1 0 0 1 -1 1h-2v3.5l-3.5 -3.5h-5.5a1 1 0 0 1 -1 -1v-9a1 1 0 0 1 1 -1z" />
+      <path d="M10 14l11 -11" />
+      <path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5" />
     </svg>
   )
 }
 
-function IconBrain(props: React.SVGProps<SVGSVGElement>) {
+function IconBulb(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8" />
-      <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8" />
-      <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5" />
-      <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5" />
-      <path d="M15.5 9.5a3.5 3.5 0 0 0 -3.5 -3.5a3.5 3.5 0 0 0 -3.5 3.5" />
-      <path d="M12 6v10" />
+      <path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" />
+      <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+      <path d="M9.7 17l4.6 0" />
     </svg>
   )
 }
@@ -126,6 +129,15 @@ function IconUserCheck(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
+function IconChevronDown(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 9l6 6l6 -6" />
+    </svg>
+  )
+}
+
+// ── Content ───────────────────────────────────────────────────────────────
 const steps = [
   {
     number: '01',
@@ -155,36 +167,48 @@ const features = [
     title: 'Issue Classification',
     description:
       'Automatically categorises tickets into payment failures, P2P disputes, KYC queries, fraud flags, withdrawal issues, and general enquiries.',
+    variant: 'top-border' as const,
+    span: 'lg:col-span-3',
   },
   {
-    icon: IconAlertTriangle,
+    icon: IconGauge,
     title: 'Urgency Scoring',
     description:
       'Scores every ticket 1-5 based on language, financial risk signals, and time sensitivity.',
+    variant: 'corner-accent' as const,
+    span: 'lg:col-span-3',
   },
   {
-    icon: IconVectorSearch,
+    icon: IconStack,
     title: 'RAG-powered Context',
     description:
       'Retrieves the most relevant policy documents for each ticket using vector similarity search.',
+    variant: 'plain' as const,
+    span: 'lg:col-span-2',
   },
   {
-    icon: IconMessageReply,
+    icon: IconSend,
     title: 'Suggested Replies',
     description:
       'Generates a professional, empathetic first response the agent can edit and send.',
+    variant: 'top-border' as const,
+    span: 'lg:col-span-2',
   },
   {
-    icon: IconBrain,
+    icon: IconBulb,
     title: 'AI Reasoning',
     description:
       'Explains every classification and urgency decision in plain English so agents trust the output.',
+    variant: 'corner-accent' as const,
+    span: 'lg:col-span-2',
   },
   {
     icon: IconChartBar,
     title: 'Analytics Dashboard',
     description:
       'Tracks ticket volume, issue distribution, urgency trends, and resolution patterns over time.',
+    variant: 'plain' as const,
+    span: 'sm:col-span-2 lg:col-span-6',
   },
 ]
 
@@ -203,14 +227,66 @@ const techStack = [
 
 const trustBadges = ['Built with FastAPI', 'Powered by OpenAI', 'Deployed on Heroku']
 
+// ── System flow diagram data ────────────────────────────────────────────────
+// Desktop grid: 4 columns x 3 rows
+const diagramNodes = [
+  { title: 'Ticket Submitted', tech: 'Web / API', col: 1, row: 1 },
+  { title: 'FastAPI', tech: 'REST endpoint', col: 2, row: 1 },
+  { title: 'Celery Queue', tech: 'Redis broker', col: 3, row: 1 },
+  { title: 'AI Pipeline', tech: 'worker.py', col: 4, row: 1 },
+  { title: 'Agent Interface', tech: 'Next.js UI', col: 1, row: 2 },
+  { title: 'PostgreSQL', tech: 'tickets table', col: 2, row: 2 },
+  { title: 'Results Written', tech: 'DB commit', col: 3, row: 2 },
+  { title: 'GPT-4o-mini', tech: 'OpenAI API', col: 4, row: 2 },
+  { title: 'pgvector RAG', tech: 'similarity search', col: 4, row: 3 },
+]
+
+// Linear order for the mobile vertical flow
+const mobileFlow = [
+  { title: 'Ticket Submitted', tech: 'Web / API' },
+  { title: 'FastAPI', tech: 'REST endpoint' },
+  { title: 'Celery Queue', tech: 'Redis broker' },
+  { title: 'AI Pipeline', tech: 'worker.py' },
+  { title: 'pgvector RAG', tech: 'similarity search' },
+  { title: 'GPT-4o-mini', tech: 'OpenAI API' },
+  { title: 'Results Written', tech: 'DB commit' },
+  { title: 'PostgreSQL', tech: 'tickets table' },
+  { title: 'Agent Interface', tech: 'Next.js UI' },
+]
+
+// Arrows for the desktop diagram, drawn in a 400x320 viewBox.
+// Each has a stagger delay so they appear left-to-right / top-to-bottom.
+const diagramArrows = [
+  { d: 'M90,40 L114,40', delay: 0 },
+  { d: 'M190,40 L214,40', delay: 100 },
+  { d: 'M290,40 L314,40', delay: 200 },
+  { d: 'M350,64 L350,136', delay: 300 },
+  { d: 'M310,180 L286,180', delay: 400 },
+  { d: 'M210,180 L186,180', delay: 500 },
+  { d: 'M110,180 L86,180', delay: 600 },
+  { d: 'M350,296 L350,224', delay: 700 },
+]
+
 export default function LandingPage() {
   const [stepsRef, stepsInView] = useInView<HTMLDivElement>()
   const [techRef, techInView] = useInView<HTMLDivElement>()
+  const [diagramRef, diagramInView] = useInView<HTMLDivElement>(0.1)
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* Hero */}
-      <section className="mx-auto max-w-5xl px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-24">
+      <section className="relative isolate overflow-hidden mx-auto max-w-5xl px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-24">
+        {/* Noise texture overlay */}
+        <svg
+          className="pointer-events-none absolute inset-0 -z-10 h-full w-full opacity-[0.04] mix-blend-overlay"
+          aria-hidden="true"
+        >
+          <filter id="noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noise)" />
+        </svg>
+
         <div className="mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366f1] fade-up" style={{ animationDelay: '0ms' }}>
           <svg viewBox="0 0 16 16" fill="none" className="h-5 w-5">
             <path d="M3 8h10M8 3v10" stroke="white" strokeWidth="2" strokeLinecap="round" />
@@ -218,10 +294,11 @@ export default function LandingPage() {
         </div>
 
         <h1
-          className="text-[36px] leading-tight font-bold tracking-tight text-[#e2e8f0] sm:text-[56px] fade-up"
+          className="text-[36px] leading-tight tracking-tight text-[#e2e8f0] sm:text-[56px] fade-up"
           style={{ animationDelay: '0ms' }}
         >
-          AI-powered fintech support triage
+          <span className="font-light">AI-powered</span>{' '}
+          <span className="font-bold">fintech support triage</span>
         </h1>
 
         <p
@@ -276,26 +353,104 @@ export default function LandingPage() {
           pipeline.
         </p>
 
-        <div ref={stepsRef} className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          {steps.map((step, i) => {
-            const Icon = step.icon
-            return (
-              <div
-                key={step.number}
-                className={`step-item rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6 ${stepsInView ? 'is-visible' : ''}`}
-                style={{ transitionDelay: `${i * 150}ms` }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-[#6366f1]">
+        <div ref={stepsRef} className="relative mt-12">
+          {/* Vertical connecting line — mobile only */}
+          <div className="absolute left-5 top-5 bottom-5 w-px bg-[#1e1e2e] sm:hidden" aria-hidden="true" />
+
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-6">
+            {steps.map((step, i) => {
+              const Icon = step.icon
+              return (
+                <div
+                  key={step.number}
+                  className={`step-item relative flex gap-4 sm:flex-col sm:gap-0 ${stepsInView ? 'is-visible' : ''}`}
+                  style={{ transitionDelay: `${i * 150}ms` }}
+                >
+                  <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#6366f1] bg-[#0a0a0f] font-mono text-xs font-semibold text-[#6366f1] sm:mb-4">
                     {step.number}
-                  </span>
-                  <Icon className="h-6 w-6 text-[#6366f1]" />
+                  </div>
+                  <div className="flex-1 rounded-lg border border-[#1e1e2e] bg-[#13131a] p-5 sm:p-6">
+                    <Icon className="h-5 w-5 text-[#6366f1] mb-3" />
+                    <h3 className="text-base font-semibold text-[#e2e8f0]">{step.title}</h3>
+                    <p className="mt-2 text-sm text-[#94a3b8]">{step.description}</p>
+                  </div>
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-[#e2e8f0]">{step.title}</h3>
-                <p className="mt-2 text-sm text-[#94a3b8]">{step.description}</p>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* How the AI works — system flow diagram */}
+      <section id="how-the-ai-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+        <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">How the AI works</h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[#94a3b8]">
+          A ticket moves through a queue, an AI pipeline, and back to the agent — with policy
+          context retrieved along the way.
+        </p>
+
+        <div ref={diagramRef} className="mt-12">
+          {/* Desktop diagram */}
+          <div className="relative hidden lg:block">
+            <svg
+              viewBox="0 0 400 320"
+              className="pointer-events-none absolute inset-0 h-full w-full"
+              aria-hidden="true"
+            >
+              <defs>
+                <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 z" fill="#6366f1" />
+                </marker>
+              </defs>
+              {diagramArrows.map((arrow, i) => (
+                <path
+                  key={i}
+                  d={arrow.d}
+                  stroke="#6366f1"
+                  strokeWidth="2"
+                  fill="none"
+                  markerEnd="url(#arrowhead)"
+                  className="diagram-arrow"
+                  style={{
+                    strokeDasharray: 120,
+                    strokeDashoffset: diagramInView ? 0 : 120,
+                    transitionDelay: `${arrow.delay}ms`,
+                  }}
+                />
+              ))}
+            </svg>
+
+            <div className="grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-10">
+              {diagramNodes.map((node) => (
+                <div
+                  key={node.title}
+                  style={{ gridColumn: node.col, gridRow: node.row }}
+                  className="flex flex-col items-center justify-center rounded-lg border border-[#1e1e2e] bg-[#13131a] px-4 py-4 text-center"
+                >
+                  <span className="text-sm font-semibold text-[#e2e8f0]">{node.title}</span>
+                  <span className="mt-1 font-mono text-[10px] text-[#64748b]">{node.tech}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile / tablet diagram — vertical flow */}
+          <div className="flex flex-col items-stretch lg:hidden">
+            {mobileFlow.map((node, i) => (
+              <div key={node.title} className="flex flex-col items-center">
+                <div
+                  className={`diagram-step w-full max-w-sm rounded-lg border border-[#1e1e2e] bg-[#13131a] px-4 py-3 text-center ${diagramInView ? 'is-visible' : ''}`}
+                  style={{ transitionDelay: `${i * 100}ms` }}
+                >
+                  <span className="text-sm font-semibold text-[#e2e8f0]">{node.title}</span>
+                  <span className="mt-1 block font-mono text-[10px] text-[#64748b]">{node.tech}</span>
+                </div>
+                {i < mobileFlow.length - 1 && (
+                  <IconChevronDown className="my-1 h-5 w-5 text-[#6366f1]" />
+                )}
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -306,17 +461,25 @@ export default function LandingPage() {
           Everything a support team needs to triage fintech tickets quickly and consistently.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {features.map((feature) => {
             const Icon = feature.icon
             return (
               <div
                 key={feature.title}
-                className="feature-card rounded-lg border border-[#1e1e2e] border-l-4 border-l-[#6366f1] bg-[#13131a] p-6"
+                className={`feature-card relative overflow-hidden rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6 ${
+                  feature.variant === 'top-border' ? 'border-t-2 border-t-[#6366f1]/50' : ''
+                } ${feature.span}`}
               >
-                <Icon className="h-6 w-6 text-[#6366f1]" />
-                <h3 className="mt-4 text-base font-semibold text-[#e2e8f0]">{feature.title}</h3>
-                <p className="mt-2 text-sm text-[#94a3b8]">{feature.description}</p>
+                {feature.variant === 'corner-accent' && (
+                  <div
+                    className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rotate-45 bg-[#6366f1]/10"
+                    aria-hidden="true"
+                  />
+                )}
+                <Icon className="relative h-6 w-6 text-[#6366f1]" />
+                <h3 className="relative mt-4 text-base font-semibold text-[#e2e8f0]">{feature.title}</h3>
+                <p className="relative mt-2 text-sm text-[#94a3b8]">{feature.description}</p>
               </div>
             )
           })}
@@ -413,12 +576,11 @@ export default function LandingPage() {
           }
 
           .feature-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.2s ease;
           }
 
           .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+            background-color: #1a1a2e;
           }
 
           .tech-badge {
@@ -430,6 +592,21 @@ export default function LandingPage() {
           .tech-badge.is-visible {
             opacity: 1;
             transform: translateX(0);
+          }
+
+          .diagram-arrow {
+            transition: stroke-dashoffset 0.8s ease;
+          }
+
+          .diagram-step {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+          }
+
+          .diagram-step.is-visible {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
       `}</style>

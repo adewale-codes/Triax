@@ -88,7 +88,7 @@ export default function NewTicketPage() {
                   if (titleError) setTitleError(null)
                 }}
                 placeholder="Brief summary of the issue"
-                className={`w-full rounded bg-[#0a0a0f] border px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#64748b] outline-none focus:ring-1 focus:ring-[#6366f1] transition-all ${
+                className={`w-full min-h-[44px] rounded bg-[#0a0a0f] border px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#64748b] outline-none focus:ring-1 focus:ring-[#6366f1] transition-all ${
                   titleError ? 'border-red-500/50' : 'border-[#1e1e2e] focus:border-[#6366f1]'
                 }`}
                 autoFocus
@@ -119,11 +119,11 @@ export default function NewTicketPage() {
               </div>
             )}
 
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
               <button
                 type="submit"
                 disabled={submitting}
-                className="rounded bg-[#6366f1] px-4 py-2 text-sm font-medium text-white hover:bg-[#4f46e5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex min-h-[44px] items-center justify-center rounded bg-[#6366f1] px-4 py-2 text-sm font-medium text-white hover:bg-[#4f46e5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export default function NewTicketPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="rounded px-4 py-2 text-sm text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#1e1e2e] transition-colors"
+                className="flex min-h-[44px] items-center justify-center rounded px-4 py-2 text-sm text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#1e1e2e] transition-colors w-full sm:w-auto"
               >
                 Cancel
               </button>
