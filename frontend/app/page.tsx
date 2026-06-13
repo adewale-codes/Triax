@@ -363,7 +363,7 @@ export default function LandingPage() {
       </section>
 
       {/* How the AI works — system flow diagram */}
-      <section id="how-the-ai-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24 flex justify-center">
+      <section id="how-the-ai-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24 flex items-center">
         <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">How the AI works</h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[#94a3b8]">
           A ticket moves through a queue, an AI pipeline, and back to the agent — with policy
