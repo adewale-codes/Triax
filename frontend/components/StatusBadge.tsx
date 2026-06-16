@@ -1,25 +1,34 @@
 type Status = 'open' | 'in_progress' | 'resolved'
 
-const STATUS_CONFIG: Record<Status, { label: string; className: string }> = {
+const STATUS_CONFIG: Record<Status, { label: string; color: string; bg: string; border: string }> = {
   open: {
     label: 'Open',
-    className: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+    color: '#4a7fa5',
+    bg: 'rgba(74,127,165,0.10)',
+    border: 'rgba(74,127,165,0.25)',
   },
   in_progress: {
     label: 'In Progress',
-    className: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
+    color: '#d4a853',
+    bg: 'rgba(212,168,83,0.10)',
+    border: 'rgba(212,168,83,0.25)',
   },
   resolved: {
     label: 'Resolved',
-    className: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+    color: '#4a9e6b',
+    bg: 'rgba(74,158,107,0.10)',
+    border: 'rgba(74,158,107,0.25)',
   },
 }
 
 export default function StatusBadge({ status }: { status: Status }) {
-  const { label, className } = STATUS_CONFIG[status] ?? STATUS_CONFIG.open
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.open
   return (
-    <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${className}`}>
-      {label}
+    <span
+      className="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+      style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
+    >
+      {cfg.label}
     </span>
   )
 }

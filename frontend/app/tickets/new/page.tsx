@@ -47,35 +47,32 @@ export default function NewTicketPage() {
   const titleOverLimit = title.length > MAX_TITLE
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen" style={{ backgroundColor: '#0c0c0c' }}>
       <Navbar />
       <main className="mx-auto max-w-2xl px-6 py-8">
         <div className="flex items-center gap-3 mb-6">
-          <Link
-            href="/queue"
-            className="text-sm text-[#64748b] hover:text-[#e2e8f0] transition-colors"
-          >
-            ← Queue
+          <Link href="/queue" className="text-sm transition-colors" style={{ color: '#888888' }}>
+            Queue
           </Link>
-          <span className="text-[#1e1e2e]">/</span>
-          <span className="text-sm text-[#e2e8f0]">New Ticket</span>
+          <span style={{ color: '#333333' }}>/</span>
+          <span className="text-sm" style={{ color: '#e8e8e8' }}>New Ticket</span>
         </div>
 
         <div className="mb-6">
-          <h1 className="text-base font-semibold text-[#e2e8f0]">Submit a ticket</h1>
-          <p className="text-xs text-[#64748b] mt-1">
+          <h1 className="text-base font-semibold" style={{ color: '#e8e8e8' }}>Submit a ticket</h1>
+          <p className="text-xs mt-1" style={{ color: '#888888' }}>
             Tickets are automatically triaged by the AI pipeline after submission.
           </p>
         </div>
 
-        <div className="rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6">
+        <div className="rounded p-6" style={{ border: '1px solid #262626', backgroundColor: '#141414' }}>
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="title" className="text-xs font-semibold text-[#e2e8f0] uppercase tracking-wide">
-                  Title <span className="text-red-500 ml-0.5">*</span>
+                <label htmlFor="title" className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#e8e8e8' }}>
+                  Title <span className="ml-0.5" style={{ color: '#c0392b' }}>*</span>
                 </label>
-                <span className={`text-xs tabular-nums ${titleOverLimit ? 'text-red-400' : 'text-[#64748b]'}`}>
+                <span className="text-xs tabular-nums" style={{ color: titleOverLimit ? '#c0392b' : '#555555' }}>
                   {titleRemaining} left
                 </span>
               </div>
@@ -88,33 +85,37 @@ export default function NewTicketPage() {
                   if (titleError) setTitleError(null)
                 }}
                 placeholder="Brief summary of the issue"
-                className={`w-full min-h-[44px] rounded bg-[#0a0a0f] border px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#64748b] outline-none focus:ring-1 focus:ring-[#6366f1] transition-all ${
-                  titleError ? 'border-red-500/50' : 'border-[#1e1e2e] focus:border-[#6366f1]'
-                }`}
+                className="w-full min-h-[44px] rounded px-3 py-2.5 text-sm outline-none transition-all"
+                style={{
+                  backgroundColor: '#0c0c0c',
+                  border: `1px solid ${titleError ? 'rgba(192,57,43,0.5)' : '#333333'}`,
+                  color: '#e8e8e8',
+                }}
                 autoFocus
               />
               {titleError && (
-                <p className="mt-1.5 text-xs text-red-400">{titleError}</p>
+                <p className="mt-1.5 text-xs" style={{ color: '#c0392b' }}>{titleError}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-xs font-semibold text-[#e2e8f0] uppercase tracking-wide mb-1.5">
+              <label htmlFor="description" className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#e8e8e8' }}>
                 Description{' '}
-                <span className="text-[#64748b] font-normal normal-case">— optional</span>
+                <span className="font-normal normal-case" style={{ color: '#555555' }}>optional</span>
               </label>
               <textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Provide any additional context, transaction IDs, or steps to reproduce..."
+                placeholder="Additional context, transaction IDs, or steps to reproduce..."
                 rows={6}
-                className="w-full rounded bg-[#0a0a0f] border border-[#1e1e2e] px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#64748b] outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all resize-none"
+                className="w-full rounded px-3 py-2.5 text-sm outline-none transition-all resize-none"
+                style={{ backgroundColor: '#0c0c0c', border: '1px solid #333333', color: '#e8e8e8' }}
               />
             </div>
 
             {error && (
-              <div className="rounded border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-xs text-red-400">
+              <div className="rounded px-3 py-2.5 text-xs" style={{ border: '1px solid rgba(192,57,43,0.25)', backgroundColor: 'rgba(192,57,43,0.06)', color: '#c0392b' }}>
                 {error}
               </div>
             )}
@@ -123,7 +124,8 @@ export default function NewTicketPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex min-h-[44px] items-center justify-center rounded bg-[#6366f1] px-4 py-2 text-sm font-medium text-white hover:bg-[#4f46e5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
+                className="flex min-h-[44px] items-center justify-center rounded px-4 py-2 text-sm font-medium transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#d4a853', color: '#0c0c0c' }}
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">
@@ -131,7 +133,7 @@ export default function NewTicketPage() {
                       <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                       <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Submitting…
+                    Submitting
                   </span>
                 ) : (
                   'Submit Ticket'
@@ -140,7 +142,8 @@ export default function NewTicketPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex min-h-[44px] items-center justify-center rounded px-4 py-2 text-sm text-[#64748b] hover:text-[#e2e8f0] hover:bg-[#1e1e2e] transition-colors w-full sm:w-auto"
+                className="flex min-h-[44px] items-center justify-center rounded px-4 py-2 text-sm transition-colors w-full sm:w-auto"
+                style={{ color: '#888888' }}
               >
                 Cancel
               </button>

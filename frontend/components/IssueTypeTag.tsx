@@ -1,51 +1,67 @@
-const ISSUE_CONFIG: Record<string, { label: string; className: string; icon: string }> = {
+const ISSUE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; icon: string }> = {
   payment_failure: {
     label: 'Payment Failure',
-    className: 'bg-orange-500/10 text-orange-400 border border-orange-500/20',
+    color: '#d4a853',
+    bg: 'rgba(212,168,83,0.10)',
+    border: 'rgba(212,168,83,0.20)',
     icon: '↯',
   },
   p2p_dispute: {
     label: 'P2P Dispute',
-    className: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+    color: '#4a7fa5',
+    bg: 'rgba(74,127,165,0.10)',
+    border: 'rgba(74,127,165,0.20)',
     icon: '⇌',
   },
   kyc_query: {
     label: 'KYC Query',
-    className: 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
+    color: '#888888',
+    bg: 'rgba(136,136,136,0.10)',
+    border: 'rgba(136,136,136,0.20)',
     icon: '◈',
   },
   fraud_flag: {
     label: 'Fraud Flag',
-    className: 'bg-red-500/10 text-red-400 border border-red-500/20',
+    color: '#c0392b',
+    bg: 'rgba(192,57,43,0.10)',
+    border: 'rgba(192,57,43,0.20)',
     icon: '⚑',
   },
   withdrawal_issue: {
     label: 'Withdrawal',
-    className: 'bg-teal-500/10 text-teal-400 border border-teal-500/20',
+    color: '#4a9e6b',
+    bg: 'rgba(74,158,107,0.10)',
+    border: 'rgba(74,158,107,0.20)',
     icon: '⇣',
   },
   general_enquiry: {
     label: 'General',
-    className: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
+    color: '#888888',
+    bg: 'rgba(136,136,136,0.08)',
+    border: 'rgba(136,136,136,0.20)',
     icon: '◎',
   },
 }
 
-export default function IssueTypeTag({ issueType }: { issueType: string | null }) {
-  if (!issueType) return <span className="text-[#64748b] text-sm">—</span>
+const FALLBACK = {
+  color: '#888888',
+  bg: 'rgba(136,136,136,0.08)',
+  border: 'rgba(136,136,136,0.20)',
+  icon: '·',
+}
 
-  const config = ISSUE_CONFIG[issueType] ?? {
-    label: issueType,
-    className: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
-    icon: '·',
-  }
+export default function IssueTypeTag({ issueType }: { issueType: string | null }) {
+  if (!issueType) return <span style={{ color: '#888888' }} className="text-sm">—</span>
+
+  const cfg = ISSUE_CONFIG[issueType] ?? { label: issueType, ...FALLBACK }
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-medium ${config.className}`}
+      className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-medium"
+      style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
     >
-      <span className="text-[10px] leading-none">{config.icon}</span>
-      {config.label}
+      <span className="text-[10px] leading-none">{cfg.icon}</span>
+      {cfg.label}
     </span>
   )
 }

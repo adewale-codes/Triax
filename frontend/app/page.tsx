@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { getTickets, getAnalytics } from '@/lib/api'
 
 const GITHUB_URL = 'https://github.com/adewale-codes/triax'
-const LINKEDIN_URL = 'https://www.linkedin.com/in/adewale-sulaiman-5ba149172/'
 
 function useInView<T extends HTMLElement>(threshold = 0.2) {
   const ref = useRef<T | null>(null)
@@ -107,14 +107,10 @@ function IconCpu(props: React.SVGProps<SVGSVGElement>) {
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
       <path d="M9 9h6v6h-6z" />
-      <path d="M3 10h2" />
-      <path d="M3 14h2" />
-      <path d="M10 3v2" />
-      <path d="M14 3v2" />
-      <path d="M21 10h-2" />
-      <path d="M21 14h-2" />
-      <path d="M14 21v-2" />
-      <path d="M10 21v-2" />
+      <path d="M3 10h2" /><path d="M3 14h2" />
+      <path d="M10 3v2" /><path d="M14 3v2" />
+      <path d="M21 10h-2" /><path d="M21 14h-2" />
+      <path d="M14 21v-2" /><path d="M10 21v-2" />
     </svg>
   )
 }
@@ -142,12 +138,12 @@ const steps = [
     icon: IconCpu,
     title: 'AI pipeline runs',
     description:
-      'The system classifies the issue, scores urgency, retrieves relevant docs, and drafts a reply.',
+      'The system classifies the issue, scores urgency, retrieves relevant policy documents, and drafts a reply.',
   },
   {
     number: '03',
     icon: IconUserCheck,
-    title: 'Agent sees results',
+    title: 'Agent reviews output',
     description:
       'The support agent reviews the AI output, edits the suggested reply, and resolves the ticket.',
   },
@@ -166,7 +162,7 @@ const features = [
     icon: IconGauge,
     title: 'Urgency Scoring',
     description:
-      'Scores every ticket 1-5 based on language, financial risk signals, and time sensitivity.',
+      'Scores every ticket 1-5 based on language, financial risk signals, and time sensitivity so critical cases surface first.',
     variant: 'corner-accent' as const,
     span: 'lg:col-span-3',
   },
@@ -190,7 +186,7 @@ const features = [
     icon: IconBulb,
     title: 'AI Reasoning',
     description:
-      'Explains every classification and urgency decision in plain English so agents trust the output.',
+      'Explains every classification and urgency decision in plain English so agents understand and trust the output.',
     variant: 'corner-accent' as const,
     span: 'lg:col-span-2',
   },
@@ -205,23 +201,11 @@ const features = [
 ]
 
 const techStack = [
-  'Python',
-  'FastAPI',
-  'Next.js',
-  'PostgreSQL',
-  'pgvector',
-  'Redis',
-  'Celery',
-  'OpenAI',
-  'Docker',
-  'GitHub Actions',
+  'Python', 'FastAPI', 'Next.js', 'PostgreSQL', 'pgvector',
+  'Redis', 'Celery', 'OpenAI', 'Docker', 'GitHub Actions',
 ]
 
-const trustBadges = ['Built with FastAPI', 'Powered by OpenAI', 'Deployed on Heroku']
-
-// ── System flow diagram data ────────────────────────────────────────────────
-// Boxes are 150x64, positioned by top-left corner (x, y is the vertical center).
-// Top row centres are spaced 175px apart starting at x=40 (centre 115).
+// ── System flow diagram data ─────────────────────────────────────────────
 const diagramBoxes = [
   { title: 'Ticket Submitted', tech: 'Web or API', x: 40, y: 60 },
   { title: 'FastAPI', tech: 'REST endpoint', x: 215, y: 60 },
@@ -234,32 +218,77 @@ const diagramBoxes = [
   { title: 'pgvector RAG', tech: 'similarity search', x: 565, y: 200 },
 ]
 
-// Arrows for the diagram, drawn in a 1100x340 viewBox.
-// Each has a stagger delay so they draw themselves left-to-right / top-to-bottom.
 const diagramArrows = [
-  { d: 'M190,60 L215,60', length: 25, delay: 0 }, // Ticket Submitted -> FastAPI
-  { d: 'M365,60 L390,60', length: 25, delay: 100 }, // FastAPI -> Celery Queue
-  { d: 'M540,60 L565,60', length: 25, delay: 200 }, // Celery Queue -> AI Pipeline
-  { d: 'M715,60 L740,60', length: 25, delay: 300 }, // AI Pipeline -> GPT-4o-mini
-  { d: 'M815,92 L815,124 L420,124 L420,168', length: 471, delay: 400 }, // GPT-4o-mini -> Results Written
-  { d: 'M565,200 L540,200', length: 25, delay: 500 }, // pgvector RAG -> Results Written
-  { d: 'M390,200 L365,200', length: 25, delay: 600 }, // Results Written -> PostgreSQL
-  { d: 'M215,200 L190,200', length: 25, delay: 700 }, // PostgreSQL -> Agent Interface
-  { d: 'M510,92 L510,148 L640,148 L640,168', length: 206, delay: 800 }, // Celery Queue -> pgvector RAG
+  { d: 'M190,60 L215,60', length: 25, delay: 0 },
+  { d: 'M365,60 L390,60', length: 25, delay: 100 },
+  { d: 'M540,60 L565,60', length: 25, delay: 200 },
+  { d: 'M715,60 L740,60', length: 25, delay: 300 },
+  { d: 'M815,92 L815,124 L420,124 L420,168', length: 471, delay: 400 },
+  { d: 'M565,200 L540,200', length: 25, delay: 500 },
+  { d: 'M390,200 L365,200', length: 25, delay: 600 },
+  { d: 'M215,200 L190,200', length: 25, delay: 700 },
+  { d: 'M510,92 L510,148 L640,148 L640,168', length: 206, delay: 800 },
 ]
 
+// ── Mini dashboard stat card ─────────────────────────────────────────────
+function StatCard({ value, label }: { value: string; label: string }) {
+  return (
+    <div style={{ borderRight: '1px solid #262626', padding: '20px 28px' }} className="last:border-r-0 flex-1 min-w-0">
+      <div className="font-mono text-3xl font-bold tabular-nums" style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}>
+        {value}
+      </div>
+      <div className="mt-1 text-xs uppercase tracking-widest" style={{ color: '#555555' }}>
+        {label}
+      </div>
+    </div>
+  )
+}
+
+// ── Page ─────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [stepsRef, stepsInView] = useInView<HTMLDivElement>()
   const [techRef, techInView] = useInView<HTMLDivElement>()
   const [diagramRef, diagramInView] = useInView<HTMLDivElement>(0.1)
 
+  const [stats, setStats] = useState<{
+    total: string
+    completed: string
+    avgUrgency: string
+    failed: string
+  } | null>(null)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const [ticketsData, analyticsData] = await Promise.all([
+          getTickets(),
+          getAnalytics(),
+        ])
+        const completedEntry = analyticsData.by_processing_status.find(
+          (e) => e.processing_status === 'completed'
+        )
+        setStats({
+          total: String(ticketsData.total),
+          completed: String(completedEntry?.count ?? 0),
+          avgUrgency:
+            analyticsData.avg_urgency_score !== null
+              ? analyticsData.avg_urgency_score.toFixed(1)
+              : '—',
+          failed: String(analyticsData.failed_count),
+        })
+      } catch {
+        setStats({ total: '—', completed: '—', avgUrgency: '—', failed: '—' })
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen" style={{ backgroundColor: '#0c0c0c' }}>
       {/* Hero */}
       <section className="relative isolate overflow-hidden mx-auto max-w-5xl px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-24">
-        {/* Noise texture overlay */}
         <svg
-          className="pointer-events-none absolute inset-0 -z-10 h-full w-full opacity-[0.04] mix-blend-overlay"
+          className="pointer-events-none absolute inset-0 -z-10 h-full w-full opacity-[0.03]"
           aria-hidden="true"
         >
           <filter id="noise">
@@ -268,27 +297,30 @@ export default function LandingPage() {
           <rect width="100%" height="100%" filter="url(#noise)" />
         </svg>
 
-        <div className="mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366f1] fade-up" style={{ animationDelay: '0ms' }}>
+        <div
+          className="mx-auto mb-6 flex h-10 w-10 items-center justify-center rounded-lg fade-up"
+          style={{ backgroundColor: '#d4a853', animationDelay: '0ms' }}
+        >
           <svg viewBox="0 0 16 16" fill="none" className="h-5 w-5">
-            <path d="M3 8h10M8 3v10" stroke="white" strokeWidth="2" strokeLinecap="round" />
+            <path d="M3 8h10M8 3v10" stroke="#0c0c0c" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
 
         <h1
-          className="text-[36px] leading-tight tracking-tight text-[#e2e8f0] sm:text-[56px] fade-up"
-          style={{ animationDelay: '0ms' }}
+          className="text-[36px] leading-tight tracking-tight sm:text-[56px] fade-up"
+          style={{ color: '#e8e8e8', animationDelay: '0ms' }}
         >
-          <span className="font-light">AI-powered</span>{' '}
-          <span className="font-bold">fintech support triage</span>
+          <span className="font-bold">Fintech support triage,</span>{' '}
+          <span className="font-light">automated</span>
         </h1>
 
         <p
-          className="mx-auto mt-5 max-w-2xl text-base text-[#94a3b8] sm:text-lg fade-up"
-          style={{ animationDelay: '150ms' }}
+          className="mx-auto mt-5 max-w-2xl text-base sm:text-lg fade-up"
+          style={{ color: '#888888', animationDelay: '150ms' }}
         >
-          Triax automatically classifies incoming support tickets, scores urgency, retrieves
-          relevant policy documents, and generates suggested replies — so your team can focus on
-          resolution, not routing.
+          Triax classifies incoming support tickets, scores urgency, retrieves relevant policy
+          documents, and drafts a suggested reply. Your support team sees the analysis, edits the
+          response, and resolves the ticket.
         </p>
 
         <div
@@ -297,7 +329,8 @@ export default function LandingPage() {
         >
           <Link
             href="/queue"
-            className="cta-pulse flex h-12 w-full items-center justify-center rounded-lg bg-[#6366f1] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:w-auto"
+            className="cta-pulse flex h-12 w-full items-center justify-center rounded-lg px-8 text-sm font-semibold transition-colors sm:w-auto"
+            style={{ backgroundColor: '#d4a853', color: '#0c0c0c' }}
           >
             Open App
           </Link>
@@ -305,39 +338,62 @@ export default function LandingPage() {
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-12 w-full items-center justify-center rounded-lg border border-[#1e1e2e] px-8 text-sm font-semibold text-[#e2e8f0] transition-colors hover:bg-[#13131a] sm:w-auto"
+            className="flex h-12 w-full items-center justify-center rounded-lg px-8 text-sm font-semibold transition-colors sm:w-auto"
+            style={{ border: '1px solid #262626', color: '#e8e8e8' }}
           >
             View on GitHub
           </a>
         </div>
+      </section>
 
+      {/* Live stats mini dashboard */}
+      <section className="mx-auto max-w-5xl px-6 pb-16 sm:pb-24">
+        <div className="mb-4 text-xs uppercase tracking-widest" style={{ color: '#555555' }}>
+          Live from the system
+        </div>
         <div
-          className="mt-10 flex flex-wrap items-center justify-center gap-3 fade-up"
-          style={{ animationDelay: '450ms' }}
+          className="flex overflow-hidden rounded"
+          style={{ border: '1px solid #262626', backgroundColor: '#141414' }}
         >
-          {trustBadges.map((badge) => (
-            <span
-              key={badge}
-              className="rounded-full border border-[#1e1e2e] bg-[#13131a] px-4 py-1.5 text-xs font-medium text-[#94a3b8]"
-            >
-              {badge}
-            </span>
-          ))}
+          <StatCard
+            value={stats?.total ?? '...'}
+            label="Tickets processed"
+          />
+          <StatCard
+            value={stats?.completed ?? '...'}
+            label="Completed by AI"
+          />
+          <StatCard
+            value={stats?.avgUrgency ?? '...'}
+            label="Avg urgency score"
+          />
+          <StatCard
+            value={stats?.failed ?? '...'}
+            label="Failed"
+          />
+        </div>
+        <div className="mt-4 text-right">
+          <Link
+            href="/analytics"
+            className="text-xs transition-colors"
+            style={{ color: '#888888' }}
+          >
+            View analytics
+          </Link>
         </div>
       </section>
 
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">How it works</h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[#94a3b8]">
-          From submission to resolution, every ticket flows through a consistent, automated triage
-          pipeline.
+        <h2 className="text-center text-2xl font-bold sm:text-3xl" style={{ color: '#e8e8e8' }}>
+          How it works
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm" style={{ color: '#888888' }}>
+          Every ticket follows the same automated pipeline from submission to resolution.
         </p>
 
         <div ref={stepsRef} className="relative mt-12">
-          {/* Vertical connecting line — mobile only */}
-          <div className="absolute left-5 top-5 bottom-5 w-px bg-[#1e1e2e] sm:hidden" aria-hidden="true" />
-
+          <div className="absolute left-5 top-5 bottom-5 w-px sm:hidden" style={{ backgroundColor: '#262626' }} aria-hidden="true" />
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-6">
             {steps.map((step, i) => {
               const Icon = step.icon
@@ -347,13 +403,19 @@ export default function LandingPage() {
                   className={`step-item relative flex gap-4 sm:flex-col sm:gap-0 ${stepsInView ? 'is-visible' : ''}`}
                   style={{ transitionDelay: `${i * 150}ms` }}
                 >
-                  <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#6366f1] bg-[#0a0a0f] font-mono text-xs font-semibold text-[#6366f1] sm:mb-4">
+                  <div
+                    className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-mono text-xs font-semibold sm:mb-4"
+                    style={{ border: '1px solid #d4a853', backgroundColor: '#0c0c0c', color: '#d4a853' }}
+                  >
                     {step.number}
                   </div>
-                  <div className="flex-1 rounded-lg border border-[#1e1e2e] bg-[#13131a] p-5 sm:p-6">
-                    <Icon className="h-5 w-5 text-[#6366f1] mb-3" />
-                    <h3 className="text-base font-semibold text-[#e2e8f0]">{step.title}</h3>
-                    <p className="mt-2 text-sm text-[#94a3b8]">{step.description}</p>
+                  <div
+                    className="flex-1 rounded-lg p-5 sm:p-6"
+                    style={{ border: '1px solid #262626', backgroundColor: '#141414' }}
+                  >
+                    <Icon className="h-5 w-5 mb-3" style={{ color: '#d4a853' } as React.CSSProperties} />
+                    <h3 className="text-base font-semibold" style={{ color: '#e8e8e8' }}>{step.title}</h3>
+                    <p className="mt-2 text-sm" style={{ color: '#888888' }}>{step.description}</p>
                   </div>
                 </div>
               )
@@ -362,91 +424,84 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How the AI works — system flow diagram */}
+      {/* How the AI works */}
       <section id="how-the-ai-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">How the AI works</h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[#94a3b8]">
-          A ticket moves through a queue, an AI pipeline, and back to the agent — with policy
+        <h2 className="text-center text-2xl font-bold sm:text-3xl" style={{ color: '#e8e8e8' }}>
+          How the AI works
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm" style={{ color: '#888888' }}>
+          A ticket moves through a queue, an AI pipeline, and back to the agent with policy
           context retrieved along the way.
         </p>
 
         <div ref={diagramRef} className="mt-12">
           <div className="flex justify-center w-full overflow-x-auto">
             <div style={{ minWidth: '800px' }}>
-            <svg
-              viewBox="0 0 1100 340"
-              width="100%"
-              role="img"
-              aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
-            >
-              <defs>
-                <marker id="diagram-arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                  <path d="M0,0 L8,4 L0,8 z" fill="#6366f1" />
-                </marker>
-              </defs>
+              <svg
+                viewBox="0 0 1100 340"
+                width="100%"
+                className="mx-auto block"
+                style={{ display: 'block', margin: '0 auto' }}
+                role="img"
+                aria-label="Diagram showing a ticket flowing from submission through FastAPI, a Celery queue, the AI pipeline, GPT-4o-mini with pgvector RAG, and back to the agent via PostgreSQL"
+              >
+                <defs>
+                  <marker id="diagram-arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 z" fill="#d4a853" />
+                  </marker>
+                </defs>
 
-              {diagramArrows.map((arrow, i) => (
-                <path
-                  key={i}
-                  d={arrow.d}
-                  stroke="#6366f1"
-                  strokeWidth="2"
-                  fill="none"
-                  markerEnd="url(#diagram-arrowhead)"
-                  className="diagram-arrow"
-                  style={{
-                    strokeDasharray: arrow.length,
-                    strokeDashoffset: diagramInView ? 0 : arrow.length,
-                    transitionDelay: `${arrow.delay}ms`,
-                  }}
-                />
-              ))}
-
-              {diagramBoxes.map((box) => (
-                <g key={box.title}>
-                  <rect
-                    x={box.x}
-                    y={box.y - 32}
-                    width={150}
-                    height={64}
-                    rx={8}
-                    fill="#13131a"
-                    stroke="#1e1e2e"
+                {diagramArrows.map((arrow, i) => (
+                  <path
+                    key={i}
+                    d={arrow.d}
+                    stroke="#d4a853"
+                    strokeWidth="2"
+                    fill="none"
+                    markerEnd="url(#diagram-arrowhead)"
+                    className="diagram-arrow"
+                    style={{
+                      strokeDasharray: arrow.length,
+                      strokeDashoffset: diagramInView ? 0 : arrow.length,
+                      transitionDelay: `${arrow.delay}ms`,
+                    }}
                   />
-                  <text
-                    x={box.x + 75}
-                    y={box.y - 6}
-                    textAnchor="middle"
-                    fill="#ffffff"
-                    fontSize="13"
-                  >
-                    {box.title}
-                  </text>
-                  <text
-                    x={box.x + 75}
-                    y={box.y + 14}
-                    textAnchor="middle"
-                    fill="#64748b"
-                    fontSize="11"
-                    fontFamily="monospace"
-                  >
-                    {box.tech}
-                  </text>
-                </g>
-              ))}
-            </svg>
+                ))}
+
+                {diagramBoxes.map((box) => (
+                  <g key={box.title}>
+                    <rect
+                      x={box.x}
+                      y={box.y - 32}
+                      width={150}
+                      height={64}
+                      rx={8}
+                      fill="#141414"
+                      stroke="#262626"
+                    />
+                    <text x={box.x + 75} y={box.y - 6} textAnchor="middle" fill="#e8e8e8" fontSize="13">
+                      {box.title}
+                    </text>
+                    <text x={box.x + 75} y={box.y + 14} textAnchor="middle" fill="#555555" fontSize="11" fontFamily="monospace">
+                      {box.tech}
+                    </text>
+                  </g>
+                ))}
+              </svg>
             </div>
           </div>
-          <p className="mt-2 text-center text-xs text-[#64748b] md:hidden">
-            ← Scroll to see full diagram →
+          <p className="mt-2 text-center text-xs md:hidden" style={{ color: '#555555' }}>
+            Scroll to see full diagram
           </p>
         </div>
       </section>
 
       {/* Features */}
       <section id="features" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">Features</h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[#94a3b8]">
+        <h2 className="text-center text-2xl font-bold sm:text-3xl" style={{ color: '#e8e8e8' }}>
+          Features
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm" style={{ color: '#888888' }}>
           Everything a support team needs to triage fintech tickets quickly and consistently.
         </p>
 
@@ -456,19 +511,26 @@ export default function LandingPage() {
             return (
               <div
                 key={feature.title}
-                className={`feature-card relative overflow-hidden rounded-lg border border-[#1e1e2e] bg-[#13131a] p-6 ${
-                  feature.variant === 'top-border' ? 'border-t-2 border-t-[#6366f1]/50' : ''
-                } ${feature.span}`}
+                className={`feature-card relative overflow-hidden rounded-lg p-6 ${feature.span} ${
+                  feature.variant === 'top-border' ? 'feat-top-border' : ''
+                }`}
+                style={{
+                  border: '1px solid #262626',
+                  backgroundColor: '#141414',
+                  borderTopColor: feature.variant === 'top-border' ? 'rgba(212,168,83,0.5)' : '#262626',
+                  borderTopWidth: feature.variant === 'top-border' ? '2px' : '1px',
+                }}
               >
                 {feature.variant === 'corner-accent' && (
                   <div
-                    className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rotate-45 bg-[#6366f1]/10"
+                    className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rotate-45"
+                    style={{ backgroundColor: 'rgba(212,168,83,0.08)' }}
                     aria-hidden="true"
                   />
                 )}
-                <Icon className="relative h-6 w-6 text-[#6366f1]" />
-                <h3 className="relative mt-4 text-base font-semibold text-[#e2e8f0]">{feature.title}</h3>
-                <p className="relative mt-2 text-sm text-[#94a3b8]">{feature.description}</p>
+                <Icon className="relative h-6 w-6" style={{ color: '#d4a853' } as React.CSSProperties} />
+                <h3 className="relative mt-4 text-base font-semibold" style={{ color: '#e8e8e8' }}>{feature.title}</h3>
+                <p className="relative mt-2 text-sm" style={{ color: '#888888' }}>{feature.description}</p>
               </div>
             )
           })}
@@ -477,13 +539,18 @@ export default function LandingPage() {
 
       {/* Tech stack */}
       <section id="tech-stack" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <h2 className="text-center text-2xl font-bold text-[#e2e8f0] sm:text-3xl">Tech stack</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl" style={{ color: '#e8e8e8' }}>Tech stack</h2>
         <div ref={techRef} className="mt-8 flex flex-wrap items-center justify-center gap-3">
           {techStack.map((tech, i) => (
             <span
               key={tech}
-              className={`tech-badge rounded-full border border-[#1e1e2e] bg-[#13131a] px-4 py-2 text-sm font-medium text-[#e2e8f0] ${techInView ? 'is-visible' : ''}`}
-              style={{ transitionDelay: `${i * 50}ms` }}
+              className={`tech-badge rounded-full px-4 py-2 text-sm font-medium ${techInView ? 'is-visible' : ''}`}
+              style={{
+                border: '1px solid #262626',
+                backgroundColor: '#141414',
+                color: '#e8e8e8',
+                transitionDelay: `${i * 50}ms`,
+              }}
             >
               {tech}
             </span>
@@ -491,64 +558,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-[#1e1e2e]">
-        <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col items-center gap-4 text-sm text-[#94a3b8] sm:flex-row sm:justify-between">
-          <p>
-            Built by{' '}
-            <a
-              href={LINKEDIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#e2e8f0] hover:text-[#6366f1] transition-colors"
-            >
-              Adewale Sulaiman
-            </a>
-          </p>
-          <div className="flex items-center gap-6">
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#e2e8f0] transition-colors"
-            >
-              GitHub
-            </a>
-            <Link href="/queue" className="hover:text-[#e2e8f0] transition-colors">
-              View live demo
-            </Link>
-          </div>
-        </div>
-      </footer>
-
       <style jsx>{`
         @media (prefers-reduced-motion: no-preference) {
           @keyframes fadeUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
           }
-
           .fade-up {
             opacity: 0;
             animation: fadeUp 0.6s ease-out forwards;
           }
 
           @keyframes pulse {
-            0%,
-            100% {
-              box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
-            }
-            50% {
-              box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
-            }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212,168,83,0.35); }
+            50%       { box-shadow: 0 0 0 8px rgba(212,168,83,0); }
           }
-
           .cta-pulse {
             animation: pulse 2s ease-in-out infinite;
           }
@@ -558,7 +582,6 @@ export default function LandingPage() {
             transform: translateX(-20px);
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
           }
-
           .step-item.is-visible {
             opacity: 1;
             transform: translateX(0);
@@ -567,9 +590,8 @@ export default function LandingPage() {
           .feature-card {
             transition: background-color 0.2s ease;
           }
-
           .feature-card:hover {
-            background-color: #1a1a2e;
+            background-color: #1a1a1a;
           }
 
           .tech-badge {
@@ -577,7 +599,6 @@ export default function LandingPage() {
             transform: translateX(-20px);
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
           }
-
           .tech-badge.is-visible {
             opacity: 1;
             transform: translateX(0);
@@ -585,17 +606,6 @@ export default function LandingPage() {
 
           .diagram-arrow {
             transition: stroke-dashoffset 0.8s ease;
-          }
-
-          .diagram-step {
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-          }
-
-          .diagram-step.is-visible {
-            opacity: 1;
-            transform: translateY(0);
           }
         }
       `}</style>

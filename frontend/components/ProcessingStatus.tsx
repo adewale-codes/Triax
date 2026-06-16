@@ -1,30 +1,26 @@
 type Status = 'pending' | 'processing' | 'completed' | 'failed'
 
-const STATUS_CONFIG: Record<Status, { label: string; className: string }> = {
-  pending: { label: 'Pending', className: 'text-[#64748b]' },
-  processing: { label: 'Processing', className: 'text-[#6366f1]' },
-  completed: { label: 'Completed', className: 'text-[#22c55e]' },
-  failed: { label: 'Failed', className: 'text-[#ef4444]' },
+const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
+  pending:    { label: 'Pending',    color: '#888888' },
+  processing: { label: 'Processing', color: '#d4a853' },
+  completed:  { label: 'Completed',  color: '#4a9e6b' },
+  failed:     { label: 'Failed',     color: '#c0392b' },
 }
 
 function Spinner() {
   return (
     <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
       <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path
-        className="opacity-80"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-      />
+      <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
   )
 }
 
 export default function ProcessingStatus({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status as Status] ?? { label: status, className: 'text-[#64748b]' }
+  const cfg = STATUS_CONFIG[status as Status] ?? { label: status, color: '#888888' }
 
   return (
-    <div className={`flex items-center gap-1.5 text-sm ${cfg.className}`}>
+    <div className="flex items-center gap-1.5 text-sm" style={{ color: cfg.color }}>
       {status === 'processing' ? (
         <Spinner />
       ) : status === 'completed' ? (
