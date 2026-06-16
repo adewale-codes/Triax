@@ -233,11 +233,11 @@ const diagramArrows = [
 // ── Mini dashboard stat card ─────────────────────────────────────────────
 function StatCard({ value, label }: { value: string; label: string }) {
   return (
-    <div style={{ borderRight: '1px solid #262626', padding: '20px 28px' }} className="last:border-r-0 flex-1 min-w-0">
+    <div className="flex flex-col items-center justify-center min-h-[80px] p-4" style={{ backgroundColor: '#141414' }}>
       <div className="font-mono text-3xl font-bold tabular-nums" style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}>
         {value}
       </div>
-      <div className="mt-1 text-xs uppercase tracking-widest" style={{ color: '#555555' }}>
+      <div className="mt-1 text-xs text-center uppercase tracking-widest" style={{ color: '#555555' }}>
         {label}
       </div>
     </div>
@@ -307,7 +307,7 @@ export default function LandingPage() {
         </div>
 
         <h1
-          className="text-[36px] leading-tight tracking-tight sm:text-[56px] fade-up"
+          className="text-3xl leading-tight tracking-tight md:text-5xl fade-up"
           style={{ color: '#e8e8e8', animationDelay: '0ms' }}
         >
           <span className="font-bold">Fintech support triage,</span>{' '}
@@ -352,25 +352,13 @@ export default function LandingPage() {
           Live from the system
         </div>
         <div
-          className="flex overflow-hidden rounded"
-          style={{ border: '1px solid #262626', backgroundColor: '#141414' }}
+          className="grid grid-cols-2 md:grid-cols-4 rounded overflow-hidden gap-px"
+          style={{ backgroundColor: '#262626', border: '1px solid #262626' }}
         >
-          <StatCard
-            value={stats?.total ?? '...'}
-            label="Tickets processed"
-          />
-          <StatCard
-            value={stats?.completed ?? '...'}
-            label="Completed by AI"
-          />
-          <StatCard
-            value={stats?.avgUrgency ?? '...'}
-            label="Avg urgency score"
-          />
-          <StatCard
-            value={stats?.failed ?? '...'}
-            label="Failed"
-          />
+          <StatCard value={stats?.total ?? '...'} label="Tickets" />
+          <StatCard value={stats?.completed ?? '...'} label="Completed" />
+          <StatCard value={stats?.avgUrgency ?? '...'} label="Avg Urgency" />
+          <StatCard value={stats?.failed ?? '...'} label="Failed" />
         </div>
         <div className="mt-4 text-right">
           <Link
@@ -393,24 +381,23 @@ export default function LandingPage() {
         </p>
 
         <div ref={stepsRef} className="relative mt-12">
-          <div className="absolute left-5 top-5 bottom-5 w-px sm:hidden" style={{ backgroundColor: '#262626' }} aria-hidden="true" />
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-6">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-6">
             {steps.map((step, i) => {
               const Icon = step.icon
               return (
                 <div
                   key={step.number}
-                  className={`step-item relative flex gap-4 sm:flex-col sm:gap-0 ${stepsInView ? 'is-visible' : ''}`}
+                  className={`step-item relative flex flex-col flex-1 ${stepsInView ? 'is-visible' : ''}`}
                   style={{ transitionDelay: `${i * 150}ms` }}
                 >
                   <div
-                    className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-mono text-xs font-semibold sm:mb-4"
+                    className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-mono text-xs font-semibold mb-4"
                     style={{ border: '1px solid #d4a853', backgroundColor: '#0c0c0c', color: '#d4a853' }}
                   >
                     {step.number}
                   </div>
                   <div
-                    className="flex-1 rounded-lg p-5 sm:p-6"
+                    className="rounded-lg p-5"
                     style={{ border: '1px solid #262626', backgroundColor: '#141414' }}
                   >
                     <Icon className="h-5 w-5 mb-3" style={{ color: '#d4a853' } as React.CSSProperties} />
@@ -425,7 +412,7 @@ export default function LandingPage() {
       </section>
 
       {/* How the AI works */}
-      <section id="how-the-ai-works" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+      <section id="how-the-ai-works" className="w-full px-8 py-16 sm:py-24">
         <h2 className="text-center text-2xl font-bold sm:text-3xl" style={{ color: '#e8e8e8' }}>
           How the AI works
         </h2>
@@ -435,7 +422,7 @@ export default function LandingPage() {
         </p>
 
         <div ref={diagramRef} className="mt-12">
-          <div className="flex justify-center w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <div style={{ minWidth: '800px' }}>
               <svg
                 viewBox="0 0 1100 340"
@@ -505,13 +492,13 @@ export default function LandingPage() {
           Everything a support team needs to triage fintech tickets quickly and consistently.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => {
             const Icon = feature.icon
             return (
               <div
                 key={feature.title}
-                className={`feature-card relative overflow-hidden rounded-lg p-6 ${feature.span} ${
+                className={`feature-card relative overflow-hidden rounded-lg p-6 ${
                   feature.variant === 'top-border' ? 'feat-top-border' : ''
                 }`}
                 style={{
